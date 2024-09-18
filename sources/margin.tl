@@ -1,3 +1,5 @@
+require("format")
+
 global type Margin = record
     left: number
     right: number
@@ -18,4 +20,8 @@ end
 
 function Margin:copy(): Margin
     return Margin:new(self.left, self.right, self.top, self.bottom)
+end
+
+function Margin:tostring(): string
+    return format("{ l: %, r: %, t: %, b: % }", self.left, self.right, self.top, self.bottom)
 end

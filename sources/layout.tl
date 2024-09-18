@@ -10,7 +10,7 @@ global type Layout = record
     is_debug: boolean
     type: LayoutType
     debug_color: Color
-    offset: number
+    stretch: number
 
 -- Widget decl:
     parent: Widget
@@ -22,6 +22,10 @@ global type Layout = record
     addItem: function(Layout, WidgetHeir)
     setSizePolicy: function(Layout, SizePolicy)
     align: function(Layout)
+    setMargin: function(Layout, Margin)
+    setGlobalPos: function(Layout, Vector2)
+    setSize: function(Layout, Vector2)
+    hide: function(Layout)
 end
 
 function Layout:new(parent: WidgetHeir, align_type: LayoutType, size: Vector2, size_policy: SizePolicy): Layout
@@ -29,7 +33,7 @@ function Layout:new(parent: WidgetHeir, align_type: LayoutType, size: Vector2, s
 
     self.is_debug = false
     self.type = align_type
-    self.offset = 16
+    self.stretch = 16
 
     self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 100)
 
@@ -37,7 +41,39 @@ function Layout:new(parent: WidgetHeir, align_type: LayoutType, size: Vector2, s
 end
 
 function Layout:update()
-    -- TODO: impl
+    if self.type == "HBox" then
+        local p_width = self.parent and (self.parent.size.x - self.parent.margin.left - self.parent.margin.right) or window.get_size().x
+        local capacity = p_width - self.stretch * (#self.childs - 1)
+
+        for i = 1, #self.childs do
+            local child = self.childs[i]
+            local prev_child = self.childs[i - 1]
+            local new_pos = (i == 1) and Vector2:new(self.pos.x + self.margin.left, self.pos.y + self.margin.top) or prev_child:getGlobalPos()
+            local prev_child_size = (i == 1) and Vector2:new(0, 0) or prev_child:getSize()
+            local stretch = (i == 1) and 0 or self.stretch
+
+            if child:getSizePolicy() == "Maximum" then
+                local target_width = capacity / (#self.childs - (i - 1))
+                child:setSize(Vector2:new(
+                    target_width - self.margin.left - self.margin.right,
+                    self.size.y - self.margin.top - self.margin.bottom
+                ))
+                printf(child)
+            end
+
+            new_pos.x = new_pos.x + prev_child_size.x + stretch
+            capacity = capacity - child:getSize().x
+            child:setGlobalPos(new_pos)
+            
+            if child:getPos().x + child:getSize().x >= p_width then
+                child:hide()
+            end
+        end
+    end
+
+    if self.type == "VBox" then error("not impl") end
+    if self.type == "Grid" then error("not impl") end
+    if self.type == "Stack" then error("not impl") end
 end
 
 function Layout:show()
@@ -54,6 +90,14 @@ function Layout:show()
     for _, child in ipairs(self.childs) do
         child:show()
     end
+end
+
+function Layout:getStretch(): number
+    return self.stretch
+end
+
+function Layout:setStretch(stretch: number)
+    self.stretch = stretch
 end
 
 function Layout:turnDebugLines(is_debug: boolean)

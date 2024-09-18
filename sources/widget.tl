@@ -1,6 +1,7 @@
 require("sizepolicy")
 require("margin")
 require("slot")
+require("format")
 
 global type WidgetHeir = any
 
@@ -14,13 +15,16 @@ global type Widget = record
     size: Vector2
     size_policy: SizePolicy
 
+    is_visible: boolean
+    is_aligned: boolean
+
 -- force decl:
+    tostring: function(Widget): string
     show: function(Widget)
-    update: function(Widget)
     align: function(Widget)
-    clamp: function(Widget)
-    stretch: function(Widget)
+    warp: function(Widget)
     getSize: function(Widget): Vector2
+    updateSelf: function(Widget)
 end
 
 function Widget:new(parent: WidgetHeir, size: Vector2, size_policy: SizePolicy): Widget
@@ -32,24 +36,31 @@ function Widget:new(parent: WidgetHeir, size: Vector2, size_policy: SizePolicy):
     self.pos = Vector2:new(0, 0)
     self.margin = Margin:new(8, 8, 8, 8)
 
-    self.size = size and size:copy() or window.get_size()
+    self.size = size and size:copy() or nil
     self.size_policy = size_policy or "Minimum"
+
+    self.is_visible = true
+    self.is_aligned = false
 
     connect(signals.window_size_changed, "updateWidgetsSize", function(data: Data)
         if not data.last_size then return end
-        error(tostring(data.last_size))
+        self.is_aligned = false
+        self:updateSelf()
     end)
 
     if self.parent then
-        self:update()
-        self:align()
-        self:stretch()
-        self:clamp()
-    
         table.insert(self.parent.childs, self)
     end
+
+    self:align()
+    self:updateSelf()
     
     return self
+end
+
+-- virtual:
+function Widget:tostring(): string
+    return format("Widget(pos: %, margin: %, size: %, policy: \"%\")", self.pos, self.margin, self.size, self.size_policy)
 end
 
 -- pure virtual:
@@ -65,12 +76,14 @@ function Widget:align()
 end
 
 -- private:
-function Widget:stretch()
+function Widget:warp()
     if self.size_policy == "Fixed" then return end
 
     if self.size_policy == "Maximum" then
         if self.parent then
             self.size = self.parent:getSize()
+        else
+            self.size = window.get_size()
         end
     else
         if self.size_policy == "Minimum" then
@@ -84,7 +97,7 @@ function Widget:stretch()
                 end
 
                 self.size = max_size
-            else
+            elseif not self.size then
                 self.size = Vector2:new(100, 100)
             end
         end
@@ -94,13 +107,24 @@ end
 -- private:
 function Widget:clamp()
     if not self.parent then return end
+    if self.size_policy == "Fixed" then return end
 
     if (self.pos.x + self.size.x) >= (self.parent.pos.x + self.parent.size.x - self.parent.margin.right) then
-        self.size.x = self.parent.size.x - self.parent.margin.right * 2
+        self.size.x = self.parent.size.x - self.parent.margin.right - self.parent.margin.left
     end
     
     if (self.pos.y + self.size.y) >= (self.parent.pos.x + self.parent.size.y - self.parent.margin.bottom) then
-        self.size.y = self.parent.size.y - self.parent.margin.bottom * 2
+        self.size.y = self.parent.size.y - self.parent.margin.bottom - self.parent.margin.top
+    end
+end
+
+function Widget:updateSelf()
+    self:update()
+
+    if not self.is_aligned then
+        self:warp()
+        self:clamp()
+        self.is_aligned = true
     end
 end
 
@@ -110,18 +134,24 @@ function Widget:addItem(item: WidgetHeir)
     w.parent = self
     table.insert(self.childs, w)
 
-    self:update()
     w:align()
-    w:stretch()
-    w:clamp()
+    w:updateSelf()
+
+    self:align()
+    self:updateSelf()
 end
 
 function Widget:getSize(): Vector2
     return self.size:copy()
 end
 
+function Widget:setSize(size: Vector2)
+    self.size = size:copy()
+end
+
 function Widget:setSizePolicy(policy: SizePolicy)
     self.size_policy = policy
+    self:updateSelf()
 end
 
 function Widget:getSizePolicy(): SizePolicy
@@ -130,6 +160,11 @@ end
 
 function Widget:getGlobalPos(): Vector2
     return self.pos:copy()
+end
+
+function Widget:setGlobalPos(pos: Vector2)
+    self.pos = pos:copy()
+    self:updateSelf()
 end
 
 function Widget:getPos(): Vector2
@@ -142,4 +177,14 @@ end
 
 function Widget:getMargin(): Margin
     return self.margin:copy()
+end
+
+function Widget:setMargin(margin: Margin)
+    self.margin = margin:copy()
+    self:align()
+    self:updateSelf()
+end
+
+function Widget:hide()
+    self.is_visible = false
 end

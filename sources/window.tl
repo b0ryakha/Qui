@@ -8,6 +8,7 @@ global type Window = record
     rounding: integer
 
 -- Widget decl:
+    is_visible: boolean
     parent: Widget
     childs: { Widget }
     pos: Vector2
@@ -17,6 +18,10 @@ global type Window = record
     addItem: function(Window, WidgetHeir)
     setSizePolicy: function(Window, SizePolicy)
     align: function(Window)
+    setMargin: function(Window, Margin)
+    setGlobalPos: function(Window, Vector2)
+    setSize: function(Window, Vector2)
+    hide: function(Window)
 end
 
 function Window:new(parent: WidgetHeir | SizePolicy, size: Vector2, size_policy: SizePolicy): Window
@@ -56,6 +61,8 @@ function Window:render()
 end
 
 function Window:show()
+    if not self.is_visible then return end
+
     if self.parent then
         self:render()
     else
