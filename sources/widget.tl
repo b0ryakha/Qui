@@ -1,11 +1,13 @@
 require("sizepolicy")
 require("margin")
 require("slot")
+
 require("format")
+global dbg = require("externals/debugger/debugger") as Debugger
 
 global type WidgetHeir = any
 
-global type Widget = record
+global record Widget
     parent: Widget
     childs: { Widget }
 
@@ -80,6 +82,7 @@ function Widget:warp()
     if self.size_policy == "Fixed" then return end
 
     if self.size_policy == "Maximum" then
+        --dbg()
         if self.parent then
             self.size = self.parent:getSize()
         else
@@ -109,12 +112,14 @@ function Widget:clamp()
     if not self.parent then return end
     if self.size_policy == "Fixed" then return end
 
-    if (self.pos.x + self.size.x) >= (self.parent.pos.x + self.parent.size.x - self.parent.margin.right) then
-        self.size.x = self.parent.size.x - self.parent.margin.right - self.parent.margin.left
+    local right_edge = self.parent.pos.x + self.parent.size.x - self.parent.margin.right
+    if (self.pos.x + self.size.x) >= right_edge then
+        self.size.x = self.size.x - (self.pos.x + self.size.x - right_edge)
     end
     
-    if (self.pos.y + self.size.y) >= (self.parent.pos.x + self.parent.size.y - self.parent.margin.bottom) then
-        self.size.y = self.parent.size.y - self.parent.margin.bottom - self.parent.margin.top
+    local bottom_edge = self.parent.pos.y + self.parent.size.y - self.parent.margin.bottom
+    if (self.pos.y + self.size.y) >= bottom_edge then
+        self.size.y = self.size.y - (self.pos.y + self.size.y - bottom_edge)
     end
 end
 
@@ -147,6 +152,7 @@ end
 
 function Widget:setSize(size: Vector2)
     self.size = size:copy()
+    self:updateSelf()
 end
 
 function Widget:setSizePolicy(policy: SizePolicy)

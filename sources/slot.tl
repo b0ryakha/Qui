@@ -2,7 +2,7 @@ require("signal")
 
 global type Callback = function(Data)
 
-global type Slot = record
+global record Slot
     title: string
     callbacks: { Callback }
     signal: Signal

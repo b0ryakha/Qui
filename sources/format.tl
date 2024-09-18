@@ -1,4 +1,4 @@
-global type Printable = record
+global record Printable
     tostring: function(Printable): string
 end
 

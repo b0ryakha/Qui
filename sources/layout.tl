@@ -6,7 +6,7 @@ global enum LayoutType
     "HBox" "VBox" "Grid" "Stack"
 end
 
-global type Layout = record
+global record Layout
     is_debug: boolean
     type: LayoutType
     debug_color: Color
@@ -44,21 +44,21 @@ function Layout:update()
     if self.type == "HBox" then
         local p_width = self.parent and (self.parent.size.x - self.parent.margin.left - self.parent.margin.right) or window.get_size().x
         local capacity = p_width - self.stretch * (#self.childs - 1)
+        local childs_len: integer = #self.childs
 
-        for i = 1, #self.childs do
+        for i = 1, childs_len do
             local child = self.childs[i]
             local prev_child = self.childs[i - 1]
             local new_pos = (i == 1) and Vector2:new(self.pos.x + self.margin.left, self.pos.y + self.margin.top) or prev_child:getGlobalPos()
             local prev_child_size = (i == 1) and Vector2:new(0, 0) or prev_child:getSize()
             local stretch = (i == 1) and 0 or self.stretch
 
-            if child:getSizePolicy() == "Maximum" then
-                local target_width = capacity / (#self.childs - (i - 1))
+            if child:getSizePolicy() ~= "Fixed" then
+                local target_width = capacity / (childs_len - (i - 1))
                 child:setSize(Vector2:new(
                     target_width - self.margin.left - self.margin.right,
                     self.size.y - self.margin.top - self.margin.bottom
                 ))
-                printf(child)
             end
 
             new_pos.x = new_pos.x + prev_child_size.x + stretch

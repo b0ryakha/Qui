@@ -1,4 +1,4 @@
-global type CachedColor = record
+global record CachedColor
     new: function(CachedColor, integer | string, integer, integer, integer | nil): Color
 end
 

@@ -1,7 +1,7 @@
 global type Data = { string : any }
 global type Trigger = function(data: Data): boolean
     
-global type Signal = record
+global record Signal
     title: string
     trigger: Trigger
 end

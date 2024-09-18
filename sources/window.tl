@@ -2,7 +2,7 @@ require("cachedcolor")
 require("widget")
 require("oop")
 
-global type Window = record
+global record Window
     bg_color: Color
     ol_color: Color
     rounding: integer

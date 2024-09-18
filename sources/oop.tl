@@ -1,4 +1,4 @@
-local type BaseClass = record
+local record BaseClass
     new: function(BaseClass, ...: any)
 end
 

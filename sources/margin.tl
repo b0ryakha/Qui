@@ -1,6 +1,6 @@
 require("format")
 
-global type Margin = record
+global record Margin
     left: number
     right: number
     top: number
