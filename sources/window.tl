@@ -17,7 +17,6 @@ global record Window
     size_policy: SizePolicy
     addItem: function(Window, WidgetHeir)
     setSizePolicy: function(Window, SizePolicy)
-    align: function(Window)
     setMargin: function(Window, Margin)
     setGlobalPos: function(Window, Vector2)
     setSize: function(Window, Vector2)

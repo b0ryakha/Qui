@@ -1,6 +1,6 @@
 require("sizepolicy")
 require("margin")
-require("slot")
+require("signal")
 
 require("format")
 global dbg = require("externals/debugger/debugger") as Debugger
@@ -44,8 +44,7 @@ function Widget:new(parent: WidgetHeir, size: Vector2, size_policy: SizePolicy):
     self.is_visible = true
     self.is_aligned = false
 
-    connect(signals.window_size_changed, "updateWidgetsSize", function(data: Data)
-        if not data.last_size then return end
+    connect(signals.window_size_changed, function()
         self.is_aligned = false
         self:updateSelf()
     end)

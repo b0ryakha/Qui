@@ -21,7 +21,6 @@ global record Layout
     size_policy: SizePolicy
     addItem: function(Layout, WidgetHeir)
     setSizePolicy: function(Layout, SizePolicy)
-    align: function(Layout)
     setMargin: function(Layout, Margin)
     setGlobalPos: function(Layout, Vector2)
     setSize: function(Layout, Vector2)

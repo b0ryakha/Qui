@@ -1,4 +1,4 @@
-require("slot")
+require("signal")
 require("window")
 require("layout")
 require("format")
@@ -11,8 +11,8 @@ local qui = {
 }
 
 function qui:process_events()
-    for _, slot in pairs(slots) do
-        slot:process()
+    for _, signal in pairs(signals) do
+        signal:process()
     end
 end
 
