@@ -2,16 +2,24 @@ package.path = package.path .. ";./build/?.lua"
 
 local qui = require("qui")
 
-local win = qui:new_window("Maximum")
-local child_win = qui:new_window(win, Vector2:new(1000, 500), "Fixed")
+local win = qui:window("Maximum")
+local wchild = qui:window(win, qui:vec2(1000, 500), "Fixed")
+wchild:setMargin(qui:margins(0, 0, 0, 0))
 
-local layout = qui:new_layout(child_win, "HBox", nil, "Maximum")
+local layout = qui:layout(wchild, "HBox", "Maximum")
 layout:turnDebugLines()
 
-layout:addItem(qui:new_window(nil, Vector2:new(250, 250), "Fixed"))
-layout:addItem(qui:new_window(nil, Vector2:new(250, 250)))
-layout:addItem(qui:new_window(nil, Vector2:new(500, 250), "Maximum"))
-layout:addItem(qui:new_window(nil, Vector2:new(250, 250)))
+local lchild = qui:window(layout, qui:vec2(250, 250), "Maximum")
+local lclayout = qui:layout(lchild, "HBox", "Maximum")
+lclayout:turnDebugLines()
+qui:window(lclayout, qui:vec2(100, 100)):setBackgroundColor(qui:color(255, 150, 0))
+
+layout:addItem(qui:window(qui:vec2(120, 300), "Fixed"))
+layout:addItem(qui:window(qui:vec2(250, 250)))
+layout:addItem(qui:window(qui:vec2(250, 250)))
+layout:addItem(qui:window(qui:vec2(500, 250), "Maximum"))
+
+layout:align()
 
 while window.is_open() do
     qui:process_events()

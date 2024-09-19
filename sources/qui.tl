@@ -4,9 +4,11 @@ require("layout")
 require("format")
 
 local qui = {
-    new_window = Window.new,
-    new_layout = Layout.new,
-    new_color = CachedColor.new,
+    margins = Margin.new,
+    window = Window.new,
+    layout = Layout.new,
+    color = CachedColor.new,
+    vec2 = Vector2.new,
     format = format
 }
 

@@ -16,18 +16,24 @@ global record Window
     size: Vector2
     size_policy: SizePolicy
     addItem: function(Window, WidgetHeir)
-    setSizePolicy: function(Window, SizePolicy)
     setMargin: function(Window, Margin)
     setGlobalPos: function(Window, Vector2)
-    setSize: function(Window, Vector2)
     hide: function(Window)
 end
 
-function Window:new(parent: WidgetHeir | SizePolicy, size: Vector2, size_policy: SizePolicy): Window
-    if type(parent) == "string" then
+-- Window(parent: WidgetHeir, size: Vector2, size_policy: SizePolicy)
+-- Window(size: Vector2)
+-- Window(size_policy: SizePolicy)
+-- Window(size: Vector2, size_policy: SizePolicy)
+function Window:new(parent: WidgetHeir | SizePolicy | Vector2, size: Vector2 | SizePolicy, size_policy: SizePolicy): Window
+    if type(parent) == "string" and size == nil and size_policy == nil then
         size_policy = parent as SizePolicy
         parent = nil
         size = nil
+    elseif (parent as Vector2).x ~= nil and (parent as Vector2).y ~= nil then
+        size_policy = size and (size as SizePolicy) or nil
+        size = parent as Vector2
+        parent = nil
     end
 
     local self = extends(Window, Widget, { parent, size, size_policy })
