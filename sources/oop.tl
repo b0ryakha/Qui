@@ -1,12 +1,12 @@
-local record BaseClass
-    new: function(BaseClass, ...: any)
+local record Base
+    new: function<Self>(Self, ...: any)
 end
 
-global function extends<ChildClass>(child: ChildClass, base: BaseClass, args: { integer : any }): ChildClass
+global function extends<Child>(child: Child, base: Base, ...: any): Child
     local index = {}
     
-    for k, v in pairs(base as { string : any }) do index[k] = v end
-    for k, v in pairs(child as { string : any }) do index[k] = v end
+    for k, v in pairs(base as table) do index[k] = v end
+    for k, v in pairs(child as table) do index[k] = v end
 
-    return setmetatable(base:new(table.unpack(args)), { __index = index })
+    return setmetatable(base:new(...), { __index = index })
 end

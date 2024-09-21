@@ -1,9 +1,7 @@
 require("sizepolicy")
-require("margin")
 require("signal")
 
-require("format")
-global dbg = require("externals/debugger/debugger") as Debugger
+--global dbg = require("externals/debugger/debugger") as Debugger
 
 global type WidgetHeir = any
 
@@ -12,106 +10,70 @@ global record Widget
     childs: { Widget }
 
     pos: Vector2
-    margin: Margin
+    is_visible: boolean
 
-    is_outside_size: boolean
     size: Vector2
     size_policy: SizePolicy
 
-    is_visible: boolean
-
 -- force decl:
-    setSize: function(Widget, Vector2)
-    getSize: function(Widget): Vector2
-    tostring: function(Widget): string
-    show: function(Widget)
-    align: function(Widget)
-    warp: function(Widget)
-    updateSelf: function(Widget)
+    setParent: function<Self>(Self, WidgetHeir)
+    setSize: function<Self>(Self, Vector2)
+    setPos: function<Self>(Self, Vector2)
+    update: function<Self>(Self)
+    getSize: function<Self>(Self): Vector2
 end
 
 function Widget:new(parent: WidgetHeir, size: Vector2, size_policy: SizePolicy): Widget
     local self: Widget = setmetatable({}, { __index = Widget })
 
-    self.parent = parent as Widget
-    self.childs = {}
-
     self.pos = Vector2:new(0, 0)
-    self.margin = Margin:new(8, 8, 8, 8)
-
-    self.is_outside_size = false
-    self.size_policy = size_policy or "Minimum"
-
     self.is_visible = true
 
-    connect("window_size_changed", function() self:updateSelf() end)
-    connect("startup", function() self:updateSelf() end)
+    self.size = size and size:copy() or Vector2:new(100, 100)
+    self.size_policy = size_policy or "Fixed"
 
-    if self.parent then
-        table.insert(self.parent.childs, self)
-    end
-    
-    self:setSize(size or Vector2:new(100, 100))
-    self:align()
+    self.childs = {}
+    self:setParent(parent)
+
+    connect("window_size_changed", function() self:update() end)
+    connect("startup", function() self:update() end)
     
     return self
 end
 
--- virtual:
-function Widget:tostring(): string
-    return format("Widget(pos: %, margin: %, size: %, policy: \"%\")", self.pos, self.margin, self.size, self.size_policy)
+function Widget:addChild(widget_heir: WidgetHeir)
+    if not widget_heir then return end
+    local widget = widget_heir as Widget
+
+    widget.parent = self
+    table.insert(self.childs, widget)
+
+    self:update()
+end
+
+function Widget:setParent(widget_heir: WidgetHeir)
+    if not widget_heir then return end
+    local widget = widget_heir as Widget
+
+    widget:addChild(self)
+end
+
+function Widget:setLayout(widget_heir: WidgetHeir)
+    if not widget_heir then return end
+    local layout = widget_heir as Widget
+
+    layout:setParent(self)
+    layout:setSize(self.size) -- by ref
+    layout:setPos(self.pos) -- by ref
 end
 
 -- pure virtual:
-function Widget:show() end
+function Widget:render() end
 function Widget:update() end
 
--- private:
-function Widget:align()
-    if not self.parent then return end
-
-    self.pos.x = self.parent.pos.x + self.parent.margin.left
-    self.pos.y = self.parent.pos.y + self.parent.margin.top
-end
-
--- private:
-function Widget:warp()
-    if self.is_outside_size then return end
-
-    if self.size_policy == "Maximum" then
-        if self.parent then
-            self.size = self.parent:getSize()
-        else
-            self.size = window.get_size()
-        end
-    end
-end
-
--- private:
-function Widget:clamp()
-    if not self.parent then return end
-    if self.size_policy == "Fixed" then return end
-
-    local right_edge = self.parent.pos.x + self.parent.size.x - self.parent.margin.right
-    if (self.pos.x + self.size.x) >= right_edge then
-        self.size.x = self.size.x - (self.pos.x + self.size.x - right_edge)
-    end
-    
-    local bottom_edge = self.parent.pos.y + self.parent.size.y - self.parent.margin.bottom
-    if (self.pos.y + self.size.y) >= bottom_edge then
-        self.size.y = self.size.y - (self.pos.y + self.size.y - bottom_edge)
-    end
-end
-
-function Widget:updateSelf()
-    self:warp()
-    self:clamp()
-
-    for _, child in ipairs(self.childs) do
-        child:updateSelf()
-    end
-
-    self:update()
+-- virtual:
+function Widget:tostring(): string
+    return format("Widget(pos: %, size: %, policy: \"%\")", self.pos, self.size, self.size_policy)
 end
 
 function Widget:getSize(): Vector2
@@ -119,35 +81,35 @@ function Widget:getSize(): Vector2
 end
 
 function Widget:setSize(size: Vector2)
-    self.size = size:copy()
-    self:updateSelf()
-end
-
-function Widget:getGlobalPos(): Vector2
-    return self.pos:copy()
-end
-
-function Widget:setGlobalPos(pos: Vector2)
-    self.pos = pos:copy()
-    self:updateSelf()
+    self.size = size
+    self:update()
 end
 
 function Widget:getPos(): Vector2
-    if not self.parent then
-        return self:getGlobalPos()
-    end
-
-    return self.pos - self.parent.pos
+    return self.pos:copy()
 end
 
-function Widget:getMargin(): Margin
-    return self.margin:copy()
-end
-
-function Widget:setMargin(margin: Margin)
-    self.margin = margin:copy()
+function Widget:setPos(pos: Vector2)
+    self.pos = pos
+    self:update()
 end
 
 function Widget:hide()
     self.is_visible = false
+end
+
+function Widget:show()
+    self.is_visible = true
+end
+
+function Widget:isVisible(): boolean
+    return self.is_visible
+end
+
+function Widget:getPosition(): Vector2
+    return self.pos:copy()
+end
+
+function Widget:setPosition(pos: Vector2)
+    self.pos = pos
 end

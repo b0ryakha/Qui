@@ -8,45 +8,41 @@ global record Window
     rounding: integer
 
 -- Widget decl:
-    is_visible: boolean
     parent: Widget
     childs: { Widget }
     pos: Vector2
-    margin: Margin
     size: Vector2
     size_policy: SizePolicy
-    addItem: function(Window, WidgetHeir)
-    setMargin: function(Window, Margin)
-    setGlobalPos: function(Window, Vector2)
-    hide: function(Window)
+    isVisible: function<Self>(Self): boolean
+    getPosition: function<Self>(Self): Vector2
+    setPosition: function<Self>(Self, Vector2)
+    setLayout: function<Self>(Self, WidgetHeir)
 end
 
 -- Window(parent: WidgetHeir, size: Vector2, size_policy: SizePolicy)
--- Window(size: Vector2)
--- Window(size_policy: SizePolicy)
 -- Window(size: Vector2, size_policy: SizePolicy)
-function Window:new(parent: WidgetHeir | SizePolicy | Vector2, size: Vector2 | SizePolicy, size_policy: SizePolicy): Window
-    if type(parent) == "string" and size == nil and size_policy == nil then
-        size_policy = parent as SizePolicy
-        parent = nil
-        size = nil
-    elseif (parent as Vector2).x ~= nil and (parent as Vector2).y ~= nil then
-        size_policy = size and (size as SizePolicy) or nil
+-- Window(size: Vector2)
+-- TODO: Window(size_policy: SizePolicy)
+function Window:new(parent: WidgetHeir | Vector2, size: Vector2 | SizePolicy, size_policy: SizePolicy): Window
+    if (parent as Vector2).x ~= nil and (parent as Vector2).y ~= nil then
+        size_policy = size as SizePolicy
         size = parent as Vector2
         parent = nil
     end
 
-    local self = extends(Window, Widget, { parent, size, size_policy })
+    local self = extends(Window, Widget, parent, size, size_policy)
 
-    self.bg_color = CachedColor:new(36, 36, 36)
-    self.ol_color = CachedColor:new(69, 69, 69)
+    self.bg_color = CachedColor:new(35, 35, 35)
+    self.ol_color = CachedColor:new(70, 70, 70)
     self.rounding = 2
 
     return self
 end
 
--- private:
+-- override
 function Window:render()
+    if not self:isVisible() then return end
+
     local x <const>: integer = self.pos.x as integer
     local y <const>: integer = self.pos.y as integer
     local w <const>: integer = self.size.x as integer
@@ -61,19 +57,7 @@ function Window:render()
     end
 
     for _, child in ipairs(self.childs) do
-        child:show()
-    end
-end
-
-function Window:show()
-    if not self.is_visible then return end
-
-    if self.parent then
-        self:render()
-    else
-        window.clear()
-        self:render()
-        window.display()
+        child:render()
     end
 end
 
@@ -91,12 +75,4 @@ end
 
 function Window:setOutlineColor(color: Color)
     self.ol_color = color
-end
-
-function Window:getRounding(): integer
-    return self.rounding
-end
-
-function Window:setRounding(rounding: integer)
-    self.rounding = rounding
 end

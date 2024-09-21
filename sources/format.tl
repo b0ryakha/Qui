@@ -28,14 +28,3 @@ global function format(fmt: string, ...: any): string
 
     return res
 end
-
-global function printf(fmt_or_v: any, ...: any): string
-    if type(fmt_or_v) == "string" then
-        io.write(format(fmt_or_v as string, ...))
-    else
-        io.write(to_string(fmt_or_v))
-    end
-
-    io.write('\n')
-    io.flush()
-end

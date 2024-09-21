@@ -1,4 +1,4 @@
-require("format")
+require("log")
 
 global type Data = { string : any }
 global type Slot = function(Data)
@@ -11,7 +11,7 @@ global record Signal
     data: Data
 
 -- force decl:
-    emit: function(Signal)
+    emit: function<Self>(Self)
 end
 
 global signals: { string : Signal } = {};
@@ -48,14 +48,11 @@ function Signal:addSlot(slot: Slot)
     table.insert(self.slots, slot)
 end
 
-local yellow = "\027[33m"
-local white = "\027[37m"
-
 global function connect(signal_title: string, slot: Slot)
     if signals[signal_title] then
         signals[signal_title]:addSlot(slot)
     else
-        printf("[%warning%]: attempt to connect a callback to an unknown signal: \"%\"", yellow, white, signal_title)
+        warning("Cannot connect a callback to unknown signal: \"%\"", signal_title)
     end
 end
 
@@ -63,7 +60,7 @@ global function emit(signal_title: string)
     if signals[signal_title] then
         signals[signal_title]:runSlots()
     else
-        printf("[%warning%]: attempt to emit an unknown signal: \"%\"", yellow, white, signal_title)
+        warning("Cannot emit a unknown signal: \"%\"", signal_title)
     end
 end
 

@@ -1,5 +1,5 @@
 global record CachedColor
-    new: function(CachedColor, integer | string, integer, integer, integer | nil): Color
+    new: function<Self>(Self, integer | string, integer, integer, integer | nil): Color
 end
 
 local cache: { string : Color } = {}

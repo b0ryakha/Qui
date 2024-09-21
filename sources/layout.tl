@@ -1,101 +1,131 @@
 require("widget")
 require("cachedcolor")
 require("oop")
+require("margin")
+require("log")
 
 global enum LayoutType
     "HBox" "VBox" "Grid"
 end
 
 global record Layout
-    is_debug: boolean
     type: LayoutType
-    debug_color: Color
+    margin: Margin
     stretch: number
+
+    is_debug: boolean
+    debug_color: Color
 
 -- Widget decl:
     parent: Widget
     childs: { Widget }
     pos: Vector2
-    margin: Margin
     size: Vector2
     size_policy: SizePolicy
-    addItem: function(Layout, WidgetHeir)
-    setMargin: function(Layout, Margin)
-    setGlobalPos: function(Layout, Vector2)
-    hide: function(Layout)
+    hide: function<Self>(Self)
+    addChild: function<Self>(Self, WidgetHeir)
+    setSize: function<Self>(Self, Vector2)
+    setPos: function<Self>(Self, Vector2)
+    isVisible: function<Self>(Self): boolean
 end
 
 -- Layout(parent: WidgetHeir, align_type: LayoutType, size: Vector2, size_policy: SizePolicy)
 -- Layout(parent: WidgetHeir, align_type: LayoutType, size_policy: SizePolicy)
+-- Layout(parent: WidgetHeir, align_type: LayoutType)
 function Layout:new(parent: WidgetHeir, align_type: LayoutType, size: Vector2 | SizePolicy, size_policy: SizePolicy): Layout
     if type(size) == "string" then
         size_policy = size as SizePolicy
         size = nil
     end
 
-    local self = extends(Layout, Widget, { parent, size, size_policy })
+    local self = extends(Layout, Widget, parent, size, size_policy)
+    if self.parent then
+        self.parent:setLayout(self)
+    end
 
-    self.is_debug = false
     self.type = align_type
+    self.margin = Margin:new(8, 8, 8, 8)
     self.stretch = 16
 
+    self.is_debug = false
     self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 100)
 
     return self
 end
 
-function Layout:addItem(item_arg: WidgetHeir)
-    local item: Widget = item_arg as Widget
+function Layout:addItem(item_heir: WidgetHeir)
+    if not item_heir then
+        warning("Layout: Cannot add a nill item")
+        return
+    end
 
-    item.parent = self as Widget
-    table.insert(self.childs, item)
-
-    item:align()
-    item:updateSelf()
+    self:addChild(item_heir as Widget)
 end
 
-function Layout:align()
-    if self.type == "HBox" then
-        local total_width = self.size.x - self.margin.left - self.margin.right
-        local current_x = self.pos.x + self.margin.left
-        local capacity = total_width + self.stretch
-        local warp_count = 0
-
-        for _, child in ipairs(self.childs) do
-            child.is_outside_size = true
-
-            if child.size_policy == "Maximum" then
-                warp_count = warp_count + 1
-            else
-                capacity = capacity - child.size.x - self.stretch
-            end
-        end
-
-        for _, child in ipairs(self.childs) do
-            if child.size_policy == "Maximum" then
-                child.size.x = (capacity / warp_count) - self.margin.left - self.margin.right
-                capacity = capacity - child.size.x
-                warp_count = warp_count - 1
-            end
-
-            if child.size_policy ~= "Fixed" then
-                child.size.y = self.size.y - self.margin.top - self.margin.bottom
-            end
-
-            child.pos.x = current_x
-            current_x = current_x + child.size.x + self.stretch
+-- private:
+function Layout:warp(child: Widget)
+    local right_edge = self.pos.x + self.size.x - self.margin.right
+    if (child.pos.x + child.size.x) >= right_edge then
+        child.size.x = child.size.x - (child.pos.x + child.size.x - right_edge)
+    end
             
-            if child:getPos().x >= total_width then
-                child:hide()
+    local bottom_edge = self.pos.y + self.size.y - self.margin.bottom
+    if (child.pos.y + child.size.y) >= bottom_edge then
+        child.size.y = child.size.y - (child.pos.y + child.size.y - bottom_edge)
+    end
+end
+
+-- private:
+function Layout:horizontalAlign()
+    local total_width = self.size.x - self.margin.left - self.margin.right
+    local flexible_width = total_width
+    local warp_count = 0
+
+    for _, child in ipairs(self.childs) do
+        if child.size_policy == "Maximum" then
+            warp_count = warp_count + 1
+        else
+            flexible_width = flexible_width - child.size.x
+        end
+    end
+
+    if warp_count > 0 then
+        local width_per_child = flexible_width / warp_count
+
+        for _, child in ipairs(self.childs) do
+            if child.size_policy == "Maximum" then
+                child.size.x = width_per_child
+                child.size.y = self.size.y - self.margin.top - self.margin.bottom
             end
         end
     end
 
-    if self.type == "VBox" then error("not impl") end
-    if self.type == "Grid" then error("not impl") end
+    local current_x = self.pos.x + self.margin.left
+
+    for _, child in ipairs(self.childs) do
+        child.pos.x = current_x
+        child.pos.y = self.pos.y + self.margin.top
+        self:warp(child)
+
+        current_x = current_x + child.size.x + self.stretch
+    end
 end
 
-function Layout:show()
+-- override:
+function Layout:update()
+    if self.type == "HBox" then self:horizontalAlign() end
+    if self.type == "VBox" then error("not impl") end
+    if self.type == "Grid" then error("not impl") end
+
+    for _, child in ipairs(self.childs) do
+        child:update()
+    end
+end
+
+-- override
+function Layout:render()
+    if not self:isVisible() then return end
+
     if self.is_debug then
         render.rectangle(
             self.pos.x as integer,
@@ -107,12 +137,8 @@ function Layout:show()
     end
 
     for _, child in ipairs(self.childs) do
-        child:show()
+        child:render()
     end
-end
-
-function Layout:getStretch(): number
-    return self.stretch
 end
 
 function Layout:setStretch(stretch: number)
@@ -121,4 +147,12 @@ end
 
 function Layout:turnDebugLines(is_debug: boolean)
     self.is_debug = is_debug == nil and true or is_debug
+end
+
+function Layout:getMargin(): Margin
+    return self.margin:copy()
+end
+
+function Layout:setMargin(margin: Margin)
+    self.margin = margin:copy()
 end
