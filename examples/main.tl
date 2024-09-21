@@ -15,8 +15,11 @@ qui:window(lc_layout, qui:vec2(100, 100), "Maximum"):setBackgroundColor(qui:colo
 
 layout:addItem(qui:window(qui:vec2(120, 300)))
 layout:addItem(qui:window(qui:vec2(250, 250), "Minimum"))
-layout:addItem(qui:window(qui:vec2(250, 250), "Minimum"))
 layout:addItem(qui:window(qui:vec2(500, 250), "Maximum"))
+
+local label = qui:label(layout, "Text!")
+
+layout:addItem(qui:window(qui:vec2(250, 250), "Minimum"))
 layout:addItem(qui:window(qui:vec2(500, 250), "Maximum"))
 
 while window.is_open() do

@@ -22,9 +22,13 @@ end
 -- Window(parent: WidgetHeir, size: Vector2, size_policy: SizePolicy)
 -- Window(size: Vector2, size_policy: SizePolicy)
 -- Window(size: Vector2)
--- TODO: Window(size_policy: SizePolicy)
+-- Window(size_policy: SizePolicy)
 function Window:new(parent: WidgetHeir | Vector2, size: Vector2 | SizePolicy, size_policy: SizePolicy): Window
-    if (parent as Vector2).x ~= nil and (parent as Vector2).y ~= nil then
+    if type(parent) == "string" and not size and not size_policy then
+        size_policy = parent as SizePolicy
+        parent = nil
+        size = nil
+    elseif (parent as Vector2).x ~= nil and (parent as Vector2).y ~= nil then
         size_policy = size as SizePolicy
         size = parent as Vector2
         parent = nil
