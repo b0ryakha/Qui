@@ -5,7 +5,8 @@ local qui = {
     window = Window.new,
     layout = Layout.new,
     color = CachedColor.new,
-    vec2 = Vector2.new
+    vec2 = Vector2.new,
+    marg = Margin.new
 }
 
 function qui:process_events()

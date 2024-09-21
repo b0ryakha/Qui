@@ -8,11 +8,10 @@ win:setPosition(qui:vec2(16, 16))
 local layout = qui:layout(win, "HBox")
 layout:turnDebugLines()
 
--- stack overflow:
 local l_child = qui:window(layout, qui:vec2(250, 250), "Maximum")
---local lc_layout = qui:layout(l_child, "HBox", "Maximum")
---lc_layout:turnDebugLines()
---qui:window(lc_layout, qui:vec2(100, 100), "Minimum"):setBackgroundColor(qui:color(255, 150, 0))
+local lc_layout = qui:layout(l_child, "HBox", "Maximum")
+qui:window(lc_layout, qui:vec2(100, 100)):setBackgroundColor(qui:color(50, 50, 50))
+qui:window(lc_layout, qui:vec2(100, 100), "Maximum"):setBackgroundColor(qui:color(200, 200, 200))
 
 layout:addItem(qui:window(qui:vec2(120, 300)))
 layout:addItem(qui:window(qui:vec2(250, 250), "Minimum"))
