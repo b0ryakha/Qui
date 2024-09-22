@@ -22,10 +22,10 @@ end
 -- Label(parent: WidgetHeir, text: string, color: Color)
 -- Label(parent: WidgetHeir, text: string)
 function Label:new(parent: WidgetHeir, text: string, color: Color): Label
-    local self = extends(Label, Widget, parent, nil, nil)
+    local self = extends(Label, "Label", Widget, parent, nil, nil)
 
     self.text = text or ""
-    self:setFont(CachedFont:new("arial.ttf", 20, "b"))
+    self:setFont(CachedFont:new("arial.ttf", 20))
     self.text_color = color or CachedColor:new(0, 0, 0)
 
     return self

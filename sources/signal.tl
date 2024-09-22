@@ -1,4 +1,5 @@
 require("log")
+require("oop")
 
 global type Data = { string : any }
 global type Slot = function(Data)
@@ -17,7 +18,7 @@ end
 global signals: { string : Signal } = {};
 
 function Signal:new(title: string, trigger: Trigger)
-    local self: Signal = setmetatable({}, { __index = Signal })
+    local self = create(Signal, "Signal")
     
     self.title = title
     self.trigger = trigger

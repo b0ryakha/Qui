@@ -17,6 +17,8 @@ global record Window
     getPosition: function<Self>(Self): Vector2
     setPosition: function<Self>(Self, Vector2)
     setLayout: function<Self>(Self, WidgetHeir)
+    itemsSize: function<Self>(Self): integer
+    at: function<Self>(Self, index: integer): Widget
 end
 
 -- Window(parent: WidgetHeir, size: Vector2, size_policy: SizePolicy)
@@ -34,7 +36,7 @@ function Window:new(parent: WidgetHeir | Vector2, size: Vector2 | SizePolicy, si
         parent = nil
     end
 
-    local self = extends(Window, Widget, parent, size, size_policy)
+    local self = extends(Window, "Window", Widget, parent, size, size_policy)
 
     if not parent and not size and size_policy == "Maximum" then
         self.size = window.get_size()

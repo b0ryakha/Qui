@@ -1,5 +1,6 @@
 require("sizepolicy")
 require("signal")
+require("oop")
 
 --global dbg = require("externals/debugger/debugger") as Debugger
 
@@ -24,7 +25,7 @@ global record Widget
 end
 
 function Widget:new(parent: WidgetHeir, size: Vector2, size_policy: SizePolicy): Widget
-    local self: Widget = setmetatable({}, { __index = Widget })
+    local self = create(Widget, "Widget")
 
     self.pos = Vector2:new(0, 0)
     self.is_visible = true
@@ -112,4 +113,38 @@ end
 
 function Widget:setPosition(pos: Vector2)
     self.pos = pos
+end
+
+-- virtual:
+function Widget:isWidthFlexible(): boolean
+    return self.size_policy == "Maximum"
+end
+
+-- virtual:
+function Widget:isHeightFlexible(): boolean
+    return self.size_policy == "Maximum"
+end
+
+function Widget:itemsSize(): integer
+    return #self.childs
+end
+
+function Widget:at(index: integer): Widget
+    local widget = self.childs[index]
+    if not widget then
+        error(format("Widget:at(): out of bounds, size: %, but try index: %", #self.childs, index))
+    end
+
+    return widget
+end
+
+function Widget:indexOf(widget_heir: WidgetHeir): integer
+    if not widget_heir then return -1 end
+    local widget = widget_heir as Widget
+
+    for i, child in ipairs(self.childs) do
+        if child == widget then return i end
+    end
+
+    return -1
 end

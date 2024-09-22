@@ -6,12 +6,17 @@ require("spacer")
 local qui = {
     window = Window.new,
     layout = Layout.new,
-    color = CachedColor.new,
-    vec2 = Vector2.new,
-    marg = Margin.new,
     label = Label.new,
     font = CachedFont.new,
-    spacer = Spacer.new
+    spacer = Spacer.new,
+
+    vec2 = Vector2.new,
+    marg = Margin.new,
+
+    color = CachedColor.new,
+    color_rand = function(_: any): Color
+        return CachedColor:new(cmath.rand_int(0, 255), cmath.rand_int(0, 255), cmath.rand_int(0, 255))
+    end,
 }
 
 function qui:process_events()

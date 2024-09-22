@@ -9,8 +9,8 @@ end
 
 global function warning(fmt: string, ...: any)
     local yellow = "\027[33m"
-    local white = "\027[37m"
-    printf("[%WARNING%]: %", yellow, white, format(fmt, ...))
+    local standart = "\027[0m"
+    printf("[%WARNING%]: %", yellow, standart, format(fmt, ...))
 end
 
 global function info(fmt: string, ...: any)

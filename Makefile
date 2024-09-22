@@ -17,4 +17,8 @@ build_examples: build
 	mv ${EXM_DIR}/*.lua ${BUILD_DIR}/${EXM_DIR}
 
 test: build_examples
-	./externals/moonshine/Moonshine.exe ${BUILD_DIR}/${EXM_DIR}/main.lua || true
+	@if [ -z "$(example)" ]; then
+		echo -e "\e[31musing: test example=<name>\e[0m";
+		exit 0;
+	fi
+	./externals/moonshine/Moonshine.exe ${BUILD_DIR}/${EXM_DIR}/${example}.lua || true

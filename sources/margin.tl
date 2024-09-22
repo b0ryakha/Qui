@@ -1,4 +1,5 @@
 require("format")
+require("oop")
 
 global record Margin
     left: number
@@ -8,7 +9,7 @@ global record Margin
 end
     
 function Margin:new(left: number, right: number, top: number, bottom: number): Margin
-    local self: Margin = setmetatable({}, { __index = Margin })
+    local self = create(Margin, "Margin")
     
     self.left = left
     self.right = right
