@@ -2,6 +2,7 @@ require("widget")
 require("cachedcolor")
 require("oop")
 require("margin")
+require("spacer")
 require("log")
 
 global enum LayoutType
@@ -55,7 +56,7 @@ end
 
 function Layout:addItem(item_heir: WidgetHeir)
     if not item_heir then
-        warning("Layout: Cannot add a nill item")
+        warning("Layout: Cannot add a nil item")
         return
     end
 
@@ -64,6 +65,8 @@ end
 
 -- private:
 function Layout:warp(child: Widget)
+    if child.size_policy == "Fixed" then return end
+
     local right_edge = self.pos.x + self.size.x - self.margin.right
     if (child.pos.x + child.size.x) >= right_edge then
         child.size.x = child.size.x - (child.pos.x + child.size.x - right_edge)
@@ -94,8 +97,13 @@ function Layout:horizontalAlign()
 
         for _, child in ipairs(self.childs) do
             if child.size_policy == "Maximum" then
-                child.size.x = width_per_child
-                child.size.y = self.size.y - self.margin.top - self.margin.bottom
+                if (child as Spacer).align_type ~= "Vertical" then
+                    child.size.x = width_per_child
+                end
+                
+                if (child as Spacer).align_type ~= "Horizontal" then
+                    child.size.y = self.size.y - self.margin.top - self.margin.bottom
+                end
             end
         end
     end
@@ -145,7 +153,7 @@ function Layout:setStretch(stretch: number)
     self.stretch = stretch
 end
 
-function Layout:turnDebugLines(is_debug: boolean)
+function Layout:turnDebug(is_debug: boolean)
     self.is_debug = is_debug == nil and true or is_debug
 end
 

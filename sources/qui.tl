@@ -1,6 +1,7 @@
 require("window")
 require("layout")
 require("label")
+require("spacer")
 
 local qui = {
     window = Window.new,
@@ -9,7 +10,8 @@ local qui = {
     vec2 = Vector2.new,
     marg = Margin.new,
     label = Label.new,
-    font = CachedFont.new
+    font = CachedFont.new,
+    spacer = Spacer.new
 }
 
 function qui:process_events()

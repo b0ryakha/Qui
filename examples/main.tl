@@ -2,11 +2,10 @@ package.path = package.path .. ";./build/?.lua"
 
 local qui = require("qui")
 
-local win = qui:window(qui:vec2(1000, 500))
-win:setPosition(qui:vec2(16, 16))
+local win = qui:window("Maximum")
 
 local layout = qui:layout(win, "HBox")
-layout:turnDebugLines()
+layout:turnDebug()
 
 local l_child = qui:window(layout, qui:vec2(250, 250), "Maximum")
 local lc_layout = qui:layout(l_child, "HBox", "Maximum")
@@ -14,8 +13,7 @@ qui:window(lc_layout, qui:vec2(100, 100)):setBackgroundColor(qui:color(50, 50, 5
 qui:window(lc_layout, qui:vec2(100, 100), "Maximum"):setBackgroundColor(qui:color(200, 200, 200))
 
 layout:addItem(qui:window(qui:vec2(120, 300)))
-layout:addItem(qui:window(qui:vec2(250, 250), "Minimum"))
-layout:addItem(qui:window(qui:vec2(500, 250), "Maximum"))
+qui:spacer(layout, "Horizontal"):turnDebug()
 
 local label = qui:label(layout, "Text!")
 

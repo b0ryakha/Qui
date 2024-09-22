@@ -64,12 +64,13 @@ global function emit(signal_title: string)
     end
 end
 
+-- default signals:
 
-Signal:new("window_size_changed", function(data: Data): boolean
-    if not data.last_size then data.last_size = window.get_size() end
+Signal:new("window_resized", function(data: Data): boolean
+    if not data.new_size then data.new_size = window.get_size() end
 
-    if data.last_size ~= window.get_size() then
-        data.last_size = window.get_size()
+    if data.new_size ~= window.get_size() then
+        data.new_size = window.get_size()
         return true
     end
 

@@ -1,7 +1,9 @@
 require("format")
 
-global function printf(fmt_or_v: any, ...: any): string
-    io.write(format((fmt_or_v as string) .. '\n', ...))
+-- TODO: for 1 value
+
+global function printf(fmt: string, ...: any): string
+    io.write(format(fmt .. '\n', ...))
     io.flush()
 end
 

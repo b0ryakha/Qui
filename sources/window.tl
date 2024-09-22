@@ -36,6 +36,15 @@ function Window:new(parent: WidgetHeir | Vector2, size: Vector2 | SizePolicy, si
 
     local self = extends(Window, Widget, parent, size, size_policy)
 
+    if not parent and not size and size_policy == "Maximum" then
+        self.size = window.get_size()
+        connect("window_resized", function()
+            local new_size = window.get_size()
+            self.size.x = new_size.x
+            self.size.y = new_size.y
+        end)
+    end
+
     self.bg_color = CachedColor:new(35, 35, 35)
     self.ol_color = CachedColor:new(70, 70, 70)
     self.rounding = 2

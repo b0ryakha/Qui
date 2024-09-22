@@ -35,7 +35,7 @@ function Widget:new(parent: WidgetHeir, size: Vector2, size_policy: SizePolicy):
     self.childs = {}
     self:setParent(parent)
 
-    connect("window_size_changed", function() self:update() end)
+    connect("window_resized", function() self:update() end)
     connect("startup", function() self:update() end)
     
     return self
