@@ -2,6 +2,7 @@ require("window")
 require("layout")
 require("label")
 require("spacer")
+require("icon")
 
 local qui = {
     window = Window.new,
@@ -9,6 +10,7 @@ local qui = {
     label = Label.new,
     font = CachedFont.new,
     spacer = Spacer.new,
+    icon = Icon.new,
 
     vec2 = Vector2.new,
     marg = Margin.new,

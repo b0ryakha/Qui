@@ -49,7 +49,7 @@ function Window:new(parent: WidgetHeir | Vector2, size: Vector2 | SizePolicy, si
 
     self.bg_color = CachedColor:new(35, 35, 35)
     self.ol_color = CachedColor:new(70, 70, 70)
-    self.rounding = 2
+    self.rounding = 0
 
     return self
 end

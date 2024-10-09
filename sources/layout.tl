@@ -71,11 +71,13 @@ function Layout:warp(child: Widget)
     if child.size_policy == "Fixed" then return end
 
     local right_edge = self.pos.x + self.size.x - self.margin.right
+    local bottom_edge = self.pos.y + self.size.y - self.margin.bottom
+
+    -- contract:
     if (child.pos.x + child.size.x) >= right_edge then
         child.size.x = child.size.x - (child.pos.x + child.size.x - right_edge)
     end
-            
-    local bottom_edge = self.pos.y + self.size.y - self.margin.bottom
+    
     if (child.pos.y + child.size.y) >= bottom_edge then
         child.size.y = child.size.y - (child.pos.y + child.size.y - bottom_edge)
     end
@@ -102,7 +104,7 @@ function Layout:horizontalAlign()
             if child:isWidthFlexible() then
                 child.size.x = width_per_child
             end
-                
+            
             if child:isHeightFlexible() then
                 child.size.y = self.size.y - self.margin.top - self.margin.bottom
             end

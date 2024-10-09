@@ -17,6 +17,7 @@ global record Spacer
     size: Vector2
     size_policy: SizePolicy
     isVisible: function<Self>(Self): boolean
+    update: function<Self>(Self)
 end
 
 -- Spacer(parent: WidgetHeir, align_type: SpacerType)
@@ -43,6 +44,7 @@ function Spacer:new(parent: WidgetHeir, align_type: SpacerType): Spacer
     return self
 end
 
+-- override:
 function Spacer:setSize(size: Vector2)
     if not size then
         warning("Spacer: Cannot set a nil size")
@@ -50,14 +52,15 @@ function Spacer:setSize(size: Vector2)
     end
 
     self.size_policy = "Fixed"
-    self:setSize(size:copy())
+    self.size = size
+    self:update()
 end
 
 function Spacer:turnDebug(is_debug: boolean)
     self.is_debug = is_debug == nil and true or is_debug
 end
 
--- override
+-- override:
 function Spacer:render()
     if not self:isVisible() then return end
     if not self.is_debug then return end

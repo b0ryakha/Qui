@@ -2,8 +2,6 @@ require("sizepolicy")
 require("signal")
 require("oop")
 
---global dbg = require("externals/debugger/debugger") as Debugger
-
 global type WidgetHeir = any
 
 global record Widget
@@ -74,6 +72,7 @@ function Widget:update() end
 
 -- virtual:
 function Widget:tostring(): string
+    -- TODO: use polymorphic algorithm
     return format("Widget(pos: %, size: %, policy: \"%\")", self.pos, self.size, self.size_policy)
 end
 
@@ -81,7 +80,13 @@ function Widget:getSize(): Vector2
     return self.size:copy()
 end
 
+-- virtual:
 function Widget:setSize(size: Vector2)
+    if not size then
+        warning("%: Cannot set a nil size", typeof(self))
+        return
+    end
+
     self.size = size
     self:update()
 end
@@ -90,7 +95,13 @@ function Widget:getPos(): Vector2
     return self.pos:copy()
 end
 
+-- virtual:
 function Widget:setPos(pos: Vector2)
+    if not pos then
+        warning("%: Cannot set a nil pos", typeof(self))
+        return
+    end
+
     self.pos = pos
     self:update()
 end
@@ -105,14 +116,6 @@ end
 
 function Widget:isVisible(): boolean
     return self.is_visible
-end
-
-function Widget:getPosition(): Vector2
-    return self.pos:copy()
-end
-
-function Widget:setPosition(pos: Vector2)
-    self.pos = pos
 end
 
 -- virtual:
@@ -132,7 +135,7 @@ end
 function Widget:at(index: integer): Widget
     local widget = self.childs[index]
     if not widget then
-        error(format("Widget:at(): out of bounds, size: %, but try index: %", #self.childs, index))
+        error(format("%.at: out of bounds, size: %, but try index: %", typeof(self), #self.childs, index))
     end
 
     return widget

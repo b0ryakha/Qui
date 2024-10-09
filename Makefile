@@ -14,7 +14,8 @@ build_examples: build
 	tl check ${EXM_DIR}/*.tl &&
 	tl gen ${EXM_DIR}/*.tl &&
 	mkdir ${BUILD_DIR}/${EXM_DIR} &&
-	mv ${EXM_DIR}/*.lua ${BUILD_DIR}/${EXM_DIR}
+	mv ${EXM_DIR}/*.lua ${BUILD_DIR}/${EXM_DIR} &&
+	cp -r ${EXM_DIR}/assets ${BUILD_DIR}/${EXM_DIR}
 
 test: build_examples
 	@if [ -z "$(example)" ]; then
