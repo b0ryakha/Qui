@@ -2,11 +2,11 @@ require("sizepolicy")
 require("signal")
 require("oop")
 
-global type WidgetHeir = any
+--global dbg = require("externals/debugger/debugger") as Debugger
 
-global record Widget
-    parent: Widget
-    childs: { Widget }
+global interface IWidget
+    parent: IWidget
+    childs: { IWidget }
 
     pos: Vector2
     is_visible: boolean
@@ -14,15 +14,33 @@ global record Widget
     size: Vector2
     size_policy: SizePolicy
 
--- force decl:
-    setParent: function<Self>(Self, WidgetHeir)
+    addChild: function<Self>(Self, IWidget)
+    setParent: function<Self>(Self, IWidget)
+    setLayout: function<Self>(Self, IWidget)
+    getSize: function<Self>(Self): Vector2
+    getPos: function<Self>(Self): Vector2
+    hide: function<Self>(Self)
+    show: function<Self>(Self)
+    isVisible: function<Self>(Self): boolean
+    itemsCount: function<Self>(Self): integer
+    at: function<Self>(Self, integer): IWidget
+    indexOf: function<Self>(Self, IWidget): integer
+
+    -- virtual:
+    tostring: function<Self>(Self): string
     setSize: function<Self>(Self, Vector2)
     setPos: function<Self>(Self, Vector2)
+    isWidthFlexible: function<Self>(Self): boolean
+    isHeightFlexible: function<Self>(Self): boolean
+
+    -- pure virtual:
+    render: function<Self>(Self)
     update: function<Self>(Self)
-    getSize: function<Self>(Self): Vector2
 end
 
-function Widget:new(parent: WidgetHeir, size: Vector2, size_policy: SizePolicy): Widget
+global record Widget is IWidget end
+
+function Widget:new(parent: IWidget, size_policy: SizePolicy, size: Vector2): Widget
     local self = create(Widget, "Widget")
 
     self.pos = Vector2:new(0, 0)
@@ -40,9 +58,11 @@ function Widget:new(parent: WidgetHeir, size: Vector2, size_policy: SizePolicy):
     return self
 end
 
-function Widget:addChild(widget_heir: WidgetHeir)
-    if not widget_heir then return end
-    local widget = widget_heir as Widget
+function Widget:render() end
+function Widget:update() end
+
+function Widget:addChild(widget: IWidget)
+    if not widget then return end
 
     widget.parent = self
     table.insert(self.childs, widget)
@@ -50,27 +70,19 @@ function Widget:addChild(widget_heir: WidgetHeir)
     self:update()
 end
 
-function Widget:setParent(widget_heir: WidgetHeir)
-    if not widget_heir then return end
-    local widget = widget_heir as Widget
-
+function Widget:setParent(widget: IWidget)
+    if not widget then return end
     widget:addChild(self)
 end
 
-function Widget:setLayout(widget_heir: WidgetHeir)
-    if not widget_heir then return end
-    local layout = widget_heir as Widget
+function Widget:setLayout(widget: IWidget)
+    if not widget then return end
 
-    layout:setParent(self)
-    layout:setSize(self.size) -- by ref
-    layout:setPos(self.pos) -- by ref
+    widget:setParent(self)
+    widget:setSize(self.size) -- by ref
+    widget:setPos(self.pos) -- by ref
 end
 
--- pure virtual:
-function Widget:render() end
-function Widget:update() end
-
--- virtual:
 function Widget:tostring(): string
     -- TODO: use polymorphic algorithm
     return format("Widget(pos: %, size: %, policy: \"%\")", self.pos, self.size, self.size_policy)
@@ -80,7 +92,6 @@ function Widget:getSize(): Vector2
     return self.size:copy()
 end
 
--- virtual:
 function Widget:setSize(size: Vector2)
     if not size then
         warning("%: Cannot set a nil size", typeof(self))
@@ -95,7 +106,6 @@ function Widget:getPos(): Vector2
     return self.pos:copy()
 end
 
--- virtual:
 function Widget:setPos(pos: Vector2)
     if not pos then
         warning("%: Cannot set a nil pos", typeof(self))
@@ -118,21 +128,19 @@ function Widget:isVisible(): boolean
     return self.is_visible
 end
 
--- virtual:
 function Widget:isWidthFlexible(): boolean
     return self.size_policy == "Maximum"
 end
 
--- virtual:
 function Widget:isHeightFlexible(): boolean
     return self.size_policy == "Maximum"
 end
 
-function Widget:itemsSize(): integer
-    return #self.childs
+function Widget:itemsCount(): integer
+    return self.childs and #self.childs or 0
 end
 
-function Widget:at(index: integer): Widget
+function Widget:at(index: integer): IWidget
     local widget = self.childs[index]
     if not widget then
         error(format("%.at: out of bounds, size: %, but try index: %", typeof(self), #self.childs, index))
@@ -141,9 +149,8 @@ function Widget:at(index: integer): Widget
     return widget
 end
 
-function Widget:indexOf(widget_heir: WidgetHeir): integer
-    if not widget_heir then return -1 end
-    local widget = widget_heir as Widget
+function Widget:indexOf(widget: IWidget): integer
+    if not widget then return -1 end
 
     for i, child in ipairs(self.childs) do
         if child == widget then return i end

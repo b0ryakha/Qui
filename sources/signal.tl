@@ -49,6 +49,12 @@ function Signal:addSlot(slot: Slot)
     table.insert(self.slots, slot)
 end
 
+global function process_signals()
+    for _, signal in pairs(signals) do
+        signal:process()
+    end
+end
+
 global function connect(signal_title: string, slot: Slot)
     if signals[signal_title] then
         signals[signal_title]:addSlot(slot)

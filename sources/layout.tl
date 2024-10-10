@@ -8,40 +8,17 @@ global enum LayoutType
     "HBox" "VBox" "Grid"
 end
 
-global record Layout
+global record Layout is IWidget
     type: LayoutType
     margin: Margin
     stretch: number
 
     is_debug: boolean
     debug_color: Color
-
--- Widget decl:
-    parent: Widget
-    childs: { Widget }
-    pos: Vector2
-    size: Vector2
-    size_policy: SizePolicy
-    hide: function<Self>(Self)
-    addChild: function<Self>(Self, WidgetHeir)
-    setSize: function<Self>(Self, Vector2)
-    setPos: function<Self>(Self, Vector2)
-    isVisible: function<Self>(Self): boolean
-    indexOf: function<Self>(Self, WidgetHeir): integer
-    itemsSize: function<Self>(Self): integer
-    at: function<Self>(Self, index: integer): Widget
 end
 
--- Layout(parent: WidgetHeir, align_type: LayoutType, size: Vector2, size_policy: SizePolicy)
--- Layout(parent: WidgetHeir, align_type: LayoutType, size_policy: SizePolicy)
--- Layout(parent: WidgetHeir, align_type: LayoutType)
-function Layout:new(parent: WidgetHeir, align_type: LayoutType, size: Vector2 | SizePolicy, size_policy: SizePolicy): Layout
-    if type(size) == "string" then
-        size_policy = size as SizePolicy
-        size = nil
-    end
-
-    local self = extends(Layout, "Layout", Widget, parent, size, size_policy or "Maximum")
+function Layout:new(parent: IWidget, align_type: LayoutType, size_policy?: SizePolicy, size?: Vector2): Layout
+    local self = extends(Layout, "Layout", Widget, parent, size_policy or "Maximum", size)
 
     if typeof(self.parent) ~= "Layout" then
         self.parent:setLayout(self)
@@ -57,17 +34,17 @@ function Layout:new(parent: WidgetHeir, align_type: LayoutType, size: Vector2 | 
     return self
 end
 
-function Layout:addItem(item_heir: WidgetHeir)
-    if not item_heir then
+function Layout:addItem(item: IWidget)
+    if not item then
         warning("Layout: Cannot add a nil item")
         return
     end
 
-    self:addChild(item_heir as Widget)
+    self:addChild(item)
 end
 
 -- private:
-function Layout:warp(child: Widget)
+function Layout:warp(child: IWidget)
     if child.size_policy == "Fixed" then return end
 
     local right_edge = self.pos.x + self.size.x - self.margin.right
@@ -77,7 +54,6 @@ function Layout:warp(child: Widget)
     if (child.pos.x + child.size.x) >= right_edge then
         child.size.x = child.size.x - (child.pos.x + child.size.x - right_edge)
     end
-    
     if (child.pos.y + child.size.y) >= bottom_edge then
         child.size.y = child.size.y - (child.pos.y + child.size.y - bottom_edge)
     end
@@ -159,6 +135,22 @@ function Layout:verticalAlign()
     end
 end
 
+function Layout:setStretch(stretch: number)
+    self.stretch = stretch
+end
+
+function Layout:turnDebug(is_debug?: boolean)
+    self.is_debug = is_debug == nil and true or is_debug
+end
+
+function Layout:getMargin(): Margin
+    return self.margin:copy()
+end
+
+function Layout:setMargin(margin: Margin)
+    self.margin = margin:copy()
+end
+
 -- override:
 function Layout:update()
     if self.type == "HBox" then self:horizontalAlign() end
@@ -173,7 +165,7 @@ end
 
 -- override
 function Layout:render()
-    if not self:isVisible() then return end
+    if not self.is_visible then return end
 
     if self.is_debug then
         render.rectangle(
@@ -188,20 +180,4 @@ function Layout:render()
     for _, child in ipairs(self.childs) do
         child:render()
     end
-end
-
-function Layout:setStretch(stretch: number)
-    self.stretch = stretch
-end
-
-function Layout:turnDebug(is_debug: boolean)
-    self.is_debug = is_debug == nil and true or is_debug
-end
-
-function Layout:getMargin(): Margin
-    return self.margin:copy()
-end
-
-function Layout:setMargin(margin: Margin)
-    self.margin = margin:copy()
 end

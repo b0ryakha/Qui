@@ -1,10 +1,10 @@
 global record CachedFont
-    new: function<Self>(Self, string, integer, string | nil): Font
+    new: function<Self>(Self, string, integer, ?string): Font
 end
 
 local cache: { string : Font } = {}
 
-function CachedFont:new(name: string, size: integer, style: string | nil): Font
+function CachedFont:new(name: string, size: integer, style?: string): Font
     style = style or ""
     local cache_key = string.upper(name .. tostring(size) .. style)
 

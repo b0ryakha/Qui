@@ -1,29 +1,31 @@
 package.path = package.path .. ";./build/?.lua"
 
-local qui = require("qui")
+require("signal")
+require("window")
+require("layout")
 
-local win = qui:window("Maximum")
-local layout = qui:layout(win, "HBox")
+local win = Window:new(nil, "Maximum")
+local layout = Layout:new(win, "HBox")
 
-layout:addItem(qui:window(qui:vec2(100, 100)))
-layout:addItem(qui:window(qui:vec2(250, 250), "Minimum"))
+layout:addItem(Window:new(nil, "Fixed", Vector2:new(100, 100)))
+layout:addItem(Window:new(nil, "Minimum", Vector2:new(250, 250)))
 
-for i = 1, layout:itemsSize() do
-    (layout:at(i) as Window):setBackgroundColor(qui:color_rand())
+for i = 1, layout:itemsCount() do
+    (layout:at(i) as Window):setBackgroundColor(CachedColor:new(cmath.rand_int(0, 255), cmath.rand_int(0, 255), cmath.rand_int(0, 255)))
 end
 
-local vlayout = qui:layout(layout, "VBox")
-vlayout:setMargin(qui:marg(0, 0, 0, 0))
+local vlayout = Layout:new(layout, "VBox")
+vlayout:setMargin(Margin:new(0, 0, 0, 0))
 
-vlayout:addItem(qui:window("Maximum"))
-vlayout:addItem(qui:window(qui:vec2(250, 250), "Minimum"))
+vlayout:addItem(Window:new(nil, "Maximum"))
+vlayout:addItem(Window:new(nil, "Minimum", Vector2:new(250, 250)))
 
-for i = 1, vlayout:itemsSize() do
-    (vlayout:at(i) as Window):setBackgroundColor(qui:color_rand())
+for i = 1, vlayout:itemsCount() do
+    (vlayout:at(i) as Window):setBackgroundColor(CachedColor:new(cmath.rand_int(0, 255), cmath.rand_int(0, 255), cmath.rand_int(0, 255)))
 end
 
 while window.is_open() do
-    qui:process_events()
+    process_signals()
 
     window.clear()
     win:render()

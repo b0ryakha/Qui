@@ -1,27 +1,30 @@
 package.path = package.path .. ";./build/?.lua"
 
-local qui = require("qui")
+require("signal")
+require("window")
+require("layout")
+require("icon")
 
-local win = qui:window("Maximum")
-local main = qui:layout(win, "VBox")
+local win = Window:new(nil, "Maximum")
+local main = Layout:new(win, "VBox")
 main:setStretch(main.margin.top)
 
-local header = qui:layout(main, "HBox", qui:vec2(main.size.x, 44), "Minimum")
+local header = Layout:new(main, "HBox", "Minimum", Vector2:new(main.size.x, 44))
 header:turnDebug()
-qui:icon(header, "./examples/assets/arrow_left.png", qui:vec2(21, 21))
-qui:icon(header, "./examples/assets/arrow_right.png", qui:vec2(21, 21))
-qui:icon(header, "./examples/assets/arrow_down.png", qui:vec2(12, 12))
-qui:icon(header, "./examples/assets/arrow_up.png", qui:vec2(21, 21))
-qui:window(header, nil, "Maximum")
+Icon:new(header, "./examples/assets/arrow_left.png", "Fixed", Vector2:new(21, 21))
+Icon:new(header, "./examples/assets/arrow_right.png", "Fixed", Vector2:new(21, 21))
+Icon:new(header, "./examples/assets/arrow_down.png", "Fixed", Vector2:new(12, 12))
+Icon:new(header, "./examples/assets/arrow_up.png", "Fixed", Vector2:new(21, 21))
+Window:new(header, "Maximum")
 
-local page = qui:layout(main, "HBox")
+local page = Layout:new(main, "HBox")
 page:turnDebug()
 page:setStretch(4)
-qui:window(page, qui:vec2(200, page.size.y), "Minimum")
-qui:window(page, nil, "Maximum")
+Window:new(page, "Minimum", Vector2:new(200, page.size.y))
+Window:new(page, "Maximum")
 
 while window.is_open() do
-    qui:process_events()
+    process_signals()
 
     window.clear()
     win:render()

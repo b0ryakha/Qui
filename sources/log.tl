@@ -1,18 +1,16 @@
 require("format")
 
--- TODO: for 1 value
-
-global function printf(fmt: string, ...: any): string
+global function printfn(fmt: string, ...: any): string
     io.write(format(fmt .. '\n', ...))
     io.flush()
 end
 
-global function warning(fmt: string, ...: any)
+global function warning(...: any)
     local yellow = "\027[33m"
     local standart = "\027[0m"
-    printf("[%WARNING%]: %", yellow, standart, format(fmt, ...))
+    printfn(format("[%WARNING%]: %", yellow, standart, string.rep("%  ", #{...})), ...)
 end
 
-global function info(fmt: string, ...: any)
-    printf("[INFO]: %", format(fmt, ...))
+global function info(...: any)
+    printfn(format("[INFO]: %", string.rep("%  ", #{...})), ...)
 end

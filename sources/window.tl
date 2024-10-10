@@ -2,41 +2,14 @@ require("cachedcolor")
 require("widget")
 require("oop")
 
-global record Window
+global record Window is IWidget
     bg_color: Color
     ol_color: Color
     rounding: integer
-
--- Widget decl:
-    parent: Widget
-    childs: { Widget }
-    pos: Vector2
-    size: Vector2
-    size_policy: SizePolicy
-    isVisible: function<Self>(Self): boolean
-    getPosition: function<Self>(Self): Vector2
-    setPosition: function<Self>(Self, Vector2)
-    setLayout: function<Self>(Self, WidgetHeir)
-    itemsSize: function<Self>(Self): integer
-    at: function<Self>(Self, index: integer): Widget
 end
 
--- Window(parent: WidgetHeir, size: Vector2, size_policy: SizePolicy)
--- Window(size: Vector2, size_policy: SizePolicy)
--- Window(size: Vector2)
--- Window(size_policy: SizePolicy)
-function Window:new(parent: WidgetHeir | Vector2, size: Vector2 | SizePolicy, size_policy: SizePolicy): Window
-    if type(parent) == "string" and not size and not size_policy then
-        size_policy = parent as SizePolicy
-        parent = nil
-        size = nil
-    elseif (parent as Vector2).x ~= nil and (parent as Vector2).y ~= nil then
-        size_policy = size as SizePolicy
-        size = parent as Vector2
-        parent = nil
-    end
-
-    local self = extends(Window, "Window", Widget, parent, size, size_policy)
+function Window:new(parent: IWidget, size_policy: SizePolicy, size?: Vector2): Window
+    local self = extends(Window, "Window", Widget, parent, size_policy, size)
 
     if not parent and not size and size_policy == "Maximum" then
         self.size = window.get_size()
@@ -56,7 +29,7 @@ end
 
 -- override
 function Window:render()
-    if not self:isVisible() then return end
+    if not self.is_visible then return end
 
     local x <const>: integer = self.pos.x as integer
     local y <const>: integer = self.pos.y as integer

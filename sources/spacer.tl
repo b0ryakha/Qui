@@ -6,29 +6,15 @@ global enum SpacerType
     "Horizontal" "Vertical"
 end
 
-global record Spacer
+global record Spacer is IWidget
     is_debug: boolean
     align_type: SpacerType
     debug_color: Color
     thickness: number
-
--- Widget decl:
-    pos: Vector2
-    size: Vector2
-    size_policy: SizePolicy
-    isVisible: function<Self>(Self): boolean
-    update: function<Self>(Self)
 end
 
--- Spacer(parent: WidgetHeir, align_type: SpacerType)
--- Spacer(align_type: SpacerType)
-function Spacer:new(parent: WidgetHeir, align_type: SpacerType): Spacer
-    if type(parent) == "string" and not align_type then
-        align_type = parent as SpacerType
-        parent = nil
-    end
-
-    local self = extends(Spacer, "Spacer", Widget, parent, nil, "Maximum")
+function Spacer:new(parent: IWidget, align_type: SpacerType): Spacer
+    local self = extends(Spacer, "Spacer", Widget, parent, "Maximum")
 
     self.is_debug = false
     self.debug_color = CachedColor:new(20, 20, 20)
@@ -54,10 +40,6 @@ function Spacer:setSize(size: Vector2)
     self.size_policy = "Fixed"
     self.size = size
     self:update()
-end
-
-function Spacer:turnDebug(is_debug: boolean)
-    self.is_debug = is_debug == nil and true or is_debug
 end
 
 -- override:
@@ -92,4 +74,8 @@ end
 -- override:
 function Spacer:isHeightFlexible(): boolean
     return self.align_type ~= "Horizontal"
+end
+
+function Spacer:turnDebug(is_debug?: boolean)
+    self.is_debug = is_debug == nil and true or is_debug
 end

@@ -1,10 +1,10 @@
 global record CachedColor
-    new: function<Self>(Self, integer | string, integer, integer, integer | nil): Color
+    new: function<Self>(Self, integer | string, integer, integer, ?integer): Color
 end
 
 local cache: { string : Color } = {}
 
-function CachedColor:new(r_or_hex: integer | string, g: integer, b: integer, a: integer | nil): Color
+function CachedColor:new(r_or_hex: integer | string, g: integer, b: integer, a?: integer): Color
     local cache_key = ""
 
     if type(r_or_hex) == "string" then

@@ -12,7 +12,7 @@ global function create<T>(class: T, name: string): T
     return setmetatable({}, { __index = class }) as T
 end
 
-global function extends<Child>(child: Child, name: string, base: Class, ...: any): Child
+global function extends<Child>(child: Child, name: string, base: any, ...: any): Child
     local index = {}
     
     for k, v in pairs(base as table) do index[k] = v end
@@ -20,5 +20,5 @@ global function extends<Child>(child: Child, name: string, base: Class, ...: any
 
     index.__type = name
 
-    return setmetatable(base:new(...), { __index = index })
+    return setmetatable((base as Class):new(...), { __index = index })
 end
