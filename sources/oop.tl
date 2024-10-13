@@ -1,15 +1,21 @@
-local record Class
+local interface IClass
     __type: string
     new: function<Self>(Self, ...: any)
 end
 
-global function typeof(object: any): string
-    return (object as Class).__type
+global original_type = _G.type
+_G.type = function(object: any): string
+    if object == nil then return "nil" end
+
+    local mt = getmetatable(object) as IClass
+    if mt and mt.__type then return mt.__type end
+
+    return original_type(object)
 end
 
 global function create<T>(class: T, name: string): T
-    (class as Class).__type = name
-    return setmetatable({}, { __index = class }) as T
+    local mt = { __index = class, __type = name }
+    return setmetatable({}, mt) as T
 end
 
 global function extends<Child>(child: Child, name: string, base: any, ...: any): Child
@@ -18,7 +24,7 @@ global function extends<Child>(child: Child, name: string, base: any, ...: any):
     for k, v in pairs(base as table) do index[k] = v end
     for k, v in pairs(child as table) do index[k] = v end
 
-    index.__type = name
+    local mt = { __index = index, __type = name, __base_type = type(base) }
 
-    return setmetatable((base as Class):new(...), { __index = index })
+    return setmetatable((base as IClass):new(...), mt)
 end

@@ -1,15 +1,3 @@
-global record Printable
-    tostring: function(Printable): string
-end
-
-local function to_string(val: any): string
-    if type(val) == "table" and (val as Printable).tostring then
-        return (val as Printable):tostring()
-    else
-        return tostring(val)
-    end
-end
-
 global function format(fmt: string, ...: any): string
     local res = ""
     local args = { ... }
@@ -18,7 +6,7 @@ global function format(fmt: string, ...: any): string
     for i = 1, #fmt do
         if fmt:sub(i, i) == '%' then
             if count <= #args then
-                res = res .. to_string(args[count])
+                res = res .. tostring(args[count])
                 count = count + 1
             end
         else

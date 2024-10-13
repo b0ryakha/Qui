@@ -23,6 +23,6 @@ function Margin:copy(): Margin
     return Margin:new(self.left, self.right, self.top, self.bottom)
 end
 
-function Margin:tostring(): string
-    return format("{ l: %, r: %, t: %, b: % }", self.left, self.right, self.top, self.bottom)
+function Margin:__tostring(): string
+    return format("Margin(l: %, r: %, t: %, b: %)", self.left, self.right, self.top, self.bottom)
 end

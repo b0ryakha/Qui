@@ -33,8 +33,7 @@ end
 -- override:
 function Spacer:setSize(size: Vector2)
     if not size then
-        warning("Spacer: Cannot set a nil size")
-        return
+        error("Spacer: Cannot set a nil size")
     end
 
     self.size_policy = "Fixed"

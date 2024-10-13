@@ -1,5 +1,5 @@
-require("log")
 require("oop")
+require("format")
 
 global type Data = { string : any }
 global type Slot = function(Data)
@@ -59,7 +59,7 @@ global function connect(signal_title: string, slot: Slot)
     if signals[signal_title] then
         signals[signal_title]:addSlot(slot)
     else
-        warning("Cannot connect a callback to unknown signal: \"%\"", signal_title)
+        error(format("Cannot connect a callback to unknown signal: \"%\"", signal_title))
     end
 end
 
@@ -67,7 +67,7 @@ global function emit(signal_title: string)
     if signals[signal_title] then
         signals[signal_title]:runSlots()
     else
-        warning("Cannot emit a unknown signal: \"%\"", signal_title)
+        error(format("Cannot emit a unknown signal: \"%\"", signal_title))
     end
 end
 

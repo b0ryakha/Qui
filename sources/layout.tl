@@ -2,7 +2,6 @@ require("widget")
 require("cachedcolor")
 require("oop")
 require("margin")
-require("log")
 
 global enum LayoutType
     "HBox" "VBox" "Grid"
@@ -20,7 +19,7 @@ end
 function Layout:new(parent: IWidget, align_type: LayoutType, size_policy?: SizePolicy, size?: Vector2): Layout
     local self = extends(Layout, "Layout", Widget, parent, size_policy or "Maximum", size)
 
-    if typeof(self.parent) ~= "Layout" then
+    if type(self.parent) ~= "Layout" then
         self.parent:setLayout(self)
     end
 
@@ -36,8 +35,7 @@ end
 
 function Layout:addItem(item: IWidget)
     if not item then
-        warning("Layout: Cannot add a nil item")
-        return
+        error("Layout: Cannot add a nil item")
     end
 
     self:addChild(item)
@@ -98,42 +96,42 @@ function Layout:horizontalAlign()
 end
 
 -- private:
-function Layout:verticalAlign()
-    local total_height = self.size.y - self.margin.top - self.margin.bottom
-    local flexible_height = total_height
-    local warp_count = 0
-
-    for _, child in ipairs(self.childs) do
-        if child:isHeightFlexible() then
-            warp_count = warp_count + 1
-        else
-            flexible_height = flexible_height - child.size.y
-        end
-    end
-
-    if warp_count > 0 then
-        local height_per_child = flexible_height / warp_count
-
-        for _, child in ipairs(self.childs) do
-            if child:isWidthFlexible() then
-                child.size.x = self.size.x - self.margin.left - self.margin.right
-            end
-
-            if child:isHeightFlexible() then
-                child.size.y = height_per_child
-            end
-        end
-    end
-
-    local current_y = self.pos.y + self.margin.top
-
-    for _, child in ipairs(self.childs) do
-        child.pos.x = self.pos.x + self.margin.left
-        child.pos.y = current_y
-        
-        current_y = current_y + child.size.y + self.stretch
-    end
-end
+--function Layout:verticalAlign()
+--    local total_height = self.size.y - self.margin.top - self.margin.bottom
+--    local flexible_height = total_height
+--    local warp_count = 0
+--
+--    for _, child in ipairs(self.childs) do
+--        if child:isHeightFlexible() then
+--            warp_count = warp_count + 1
+--        else
+--            flexible_height = flexible_height - child.size.y
+--        end
+--    end
+--
+--    if warp_count > 0 then
+--        local height_per_child = flexible_height / warp_count
+--
+--        for _, child in ipairs(self.childs) do
+--            if child:isWidthFlexible() then
+--                child.size.x = self.size.x - self.margin.left - self.margin.right
+--            end
+--
+--            if child:isHeightFlexible() then
+--                child.size.y = height_per_child
+--            end
+--        end
+--    end
+--
+--    local current_y = self.pos.y + self.margin.top
+--
+--    for _, child in ipairs(self.childs) do
+--        child.pos.x = self.pos.x + self.margin.left
+--        child.pos.y = current_y
+--        
+--        current_y = current_y + child.size.y + self.stretch
+--    end
+--end
 
 function Layout:setStretch(stretch: number)
     self.stretch = stretch
@@ -154,7 +152,7 @@ end
 -- override:
 function Layout:update()
     if self.type == "HBox" then self:horizontalAlign() end
-    if self.type == "VBox" then self:verticalAlign() end
+    if self.type == "VBox" then error("not impl") end
     if self.type == "Grid" then error("not impl") end
 
     for _, child in ipairs(self.childs) do
