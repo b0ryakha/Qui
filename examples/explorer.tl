@@ -1,13 +1,14 @@
 package.path = package.path .. ";./build/?.lua"
 
-require("signal")
+require("application")
 require("window")
 require("layout")
 require("icon")
 
-local win = Window:new(nil, "Maximum")
-local main = Layout:new(win, "VBox")
-main:setStretch(main.margin.top)
+local app = Application:new("Explorer")
+local main = Layout:new(app, "VBox")
+main:setSpacing(0)
+main:setMargin(Margin:new(0, 0, 0, 0))
 
 local header = Layout:new(main, "HBox", "Minimum", Vector2:new(main.size.x, 44))
 header:turnDebug()
@@ -19,14 +20,12 @@ Window:new(header, "Maximum")
 
 local page = Layout:new(main, "HBox")
 page:turnDebug()
-page:setStretch(4)
+page:setSpacing(4)
 Window:new(page, "Minimum", Vector2:new(200, page.size.y))
 Window:new(page, "Maximum")
 
 while window.is_open() do
-    process_signals()
-
     window.clear()
-    win:render()
+    app:render()
     window.display()
 end

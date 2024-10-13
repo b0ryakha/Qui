@@ -1,3 +1,3 @@
 global record Debugger
-    metamethod __call: function(Debugger, boolean, number, string)
+    metamethod __call: function(Debugger, ?boolean, ?number, ?string)
 end

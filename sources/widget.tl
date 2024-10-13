@@ -3,8 +3,6 @@ require("signal")
 require("oop")
 require("format")
 
---global dbg = require("externals/debugger/debugger") as Debugger
-
 global interface IWidget
     parent: IWidget
     childs: { IWidget }
@@ -13,6 +11,7 @@ global interface IWidget
     is_visible: boolean
 
     size: Vector2
+    min_size: Vector2
     size_policy: SizePolicy
 
     addChild: function<Self>(Self, IWidget)
@@ -48,6 +47,7 @@ function Widget:new(parent: IWidget, size_policy: SizePolicy, size: Vector2): Wi
     self.is_visible = true
 
     self.size = size and size:copy() or Vector2:new(100, 100)
+    self.min_size = self.size:copy()
     self.size_policy = size_policy or "Fixed"
 
     self.childs = {}
@@ -127,15 +127,15 @@ function Widget:isVisible(): boolean
 end
 
 function Widget:isWidthFlexible(): boolean
-    return self.size_policy == "Maximum"
+    return self.size_policy ~= "Fixed"
 end
 
 function Widget:isHeightFlexible(): boolean
-    return self.size_policy == "Maximum"
+    return self.size_policy ~= "Fixed"
 end
 
 function Widget:itemsCount(): integer
-    return self.childs and #self.childs or 0
+    return #self.childs
 end
 
 function Widget:at(index: integer): IWidget

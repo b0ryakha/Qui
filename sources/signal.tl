@@ -55,6 +55,13 @@ global function process_signals()
     end
 end
 
+-- hook:
+local moonshine_is_open = window.is_open
+_G["window"].is_open = function(): boolean
+    process_signals()
+    return moonshine_is_open()
+end
+
 global function connect(signal_title: string, slot: Slot)
     if signals[signal_title] then
         signals[signal_title]:addSlot(slot)

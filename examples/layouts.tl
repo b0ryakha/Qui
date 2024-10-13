@@ -1,33 +1,29 @@
 package.path = package.path .. ";./build/?.lua"
 
-require("signal")
+require("application")
 require("window")
 require("layout")
+require("spacer")
 
-local win = Window:new(nil, "Maximum")
-local layout = Layout:new(win, "HBox")
+local app = Application:new("Layouts")
+
+local layout = Layout:new(app, "HBox")
+layout:turnDebug()
 
 layout:addItem(Window:new(nil, "Fixed", Vector2:new(100, 100)))
 layout:addItem(Window:new(nil, "Minimum", Vector2:new(250, 250)))
 
-for i = 1, layout:itemsCount() do
-    (layout:at(i) as Window):setBackgroundColor(CachedColor:new(cmath.rand_int(0, 255), cmath.rand_int(0, 255), cmath.rand_int(0, 255)))
-end
-
 local vlayout = Layout:new(layout, "VBox")
-vlayout:setMargin(Margin:new(0, 0, 0, 0))
+vlayout:turnDebug()
 
 vlayout:addItem(Window:new(nil, "Maximum"))
-vlayout:addItem(Window:new(nil, "Minimum", Vector2:new(250, 250)))
-
-for i = 1, vlayout:itemsCount() do
-    (vlayout:at(i) as Window):setBackgroundColor(CachedColor:new(cmath.rand_int(0, 255), cmath.rand_int(0, 255), cmath.rand_int(0, 255)))
-end
+local spacer = Spacer:new(nil, "Vertical")
+spacer:turnDebug()
+vlayout:addItem(spacer)
+vlayout:addItem(Window:new(nil, "Minimum", Vector2:new(100, 100)))
 
 while window.is_open() do
-    process_signals()
-
     window.clear()
-    win:render()
+    app:render()
     window.display()
 end

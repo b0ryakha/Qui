@@ -1,8 +1,10 @@
 local interface IClass
     __type: string
+    __base_type: string
     new: function<Self>(Self, ...: any)
 end
 
+-- hook:
 global original_type = _G.type
 _G.type = function(object: any): string
     if object == nil then return "nil" end
@@ -11,6 +13,10 @@ _G.type = function(object: any): string
     if mt and mt.__type then return mt.__type end
 
     return original_type(object)
+end
+
+global function derived<T>(object: T): string
+    return (getmetatable(object) as IClass).__base_type
 end
 
 global function create<T>(class: T, name: string): T
