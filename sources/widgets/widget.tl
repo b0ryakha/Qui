@@ -17,12 +17,13 @@ global interface IWidget
     size_policy: SizePolicy
 
     tooltip: string
+    tooltip_duration: number
     is_tooltip_visible: boolean
 
     addChild: function<Self>(Self, IWidget)
     setParent: function<Self>(Self, IWidget)
     setLayout: function<Self>(Self, IWidget)
-    renderTooltip: function<Self>(Self, number)
+    renderTooltip: function<Self>(Self)
     setTooltip: function<Self>(Self, string)
     getSize: function<Self>(Self): Vector2
     getPos: function<Self>(Self): Vector2
@@ -58,6 +59,7 @@ function Widget:new(parent: IWidget, size_policy: SizePolicy, size: Vector2): Wi
     self.size_policy = size_policy or "Fixed"
 
     self.tooltip = ""
+    self.tooltip_duration = 0
     self.is_tooltip_visible = false
 
     self.childs = {}
@@ -65,7 +67,9 @@ function Widget:new(parent: IWidget, size_policy: SizePolicy, size: Vector2): Wi
 
     connect("window_resized", function() self:update() end)
     connect("startup", function() self:update() end)
-    connect("cursor_stopped", function(data: Data) self:renderTooltip(data.duration as number) end)
+    connect("cursor_stopped", function(data: Data)
+        self.tooltip_duration = data.duration as number
+    end)
     
     return self
 end
@@ -99,13 +103,13 @@ function Widget:setLayout(widget: IWidget)
     widget:setPos(self.pos) -- by ref
 end
 
-function Widget:renderTooltip(duration: number)
+function Widget:renderTooltip()
     if self.tooltip == "" then return end
 
     local is_bound = cursor.is_bound(self.pos.x as integer, self.pos.y as integer, self.size.x as integer, self.size.y as integer)
 
     if not self.is_tooltip_visible then
-        if duration as number > 1 and is_bound then
+        if self.tooltip_duration > 1 and is_bound then
             self.is_tooltip_visible = true
         else
             return
@@ -125,7 +129,8 @@ function Widget:renderTooltip(duration: number)
         pos.y as integer + cursor_size,
         measure.x as integer + offset * 2,
         measure.y as integer + offset * 2,
-        CachedColor:new(255, 255, 255)
+        CachedColor:new(255, 255, 255),
+        1
     )
 
     render.outline_rectangle(
@@ -133,8 +138,8 @@ function Widget:renderTooltip(duration: number)
         pos.y as integer + cursor_size,
         measure.x as integer + offset * 2,
         measure.y as integer + offset * 2,
-        2,
-        CachedColor:new(220, 220, 220),
+        1,
+        CachedColor:new(150, 150, 150),
         1
     )
 

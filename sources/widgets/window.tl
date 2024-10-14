@@ -37,6 +37,8 @@ function Window:render()
     for _, child in ipairs(self.childs) do
         child:render()
     end
+
+    self:renderTooltip()
 end
 
 function Window:getBackgroundColor(): Color

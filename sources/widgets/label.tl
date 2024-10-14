@@ -45,6 +45,7 @@ function Label:render()
     end
 
     render.text(self.pos.x as integer, self.pos.y as integer, self.font, self.text, self.color)
+    self:renderTooltip()
 end
 
 function Label:setFont(font: Font)

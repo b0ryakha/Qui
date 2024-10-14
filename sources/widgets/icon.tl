@@ -22,7 +22,9 @@ end
 -- override:
 function Icon:render()
     if not self.is_visible then return end
+
     render.sprite(self.sprite)
+    self:renderTooltip()
 end
 
 function Icon:setColor(color: Color)

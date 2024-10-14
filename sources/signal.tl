@@ -1,8 +1,6 @@
 require("oop")
 require("format")
 
-local deltatime = require("externals/deltatime/deltatime")
-
 global type Data = { string : any }
 global type Slot = function(Data)
 global type Trigger = function(data: Data): boolean
@@ -57,15 +55,6 @@ global function process_signals()
     end
 end
 
--- hook:
-local dt = deltatime.getTime()
-local moonshine_display = window.display
-_G["window"].display = function()
-    process_signals()
-    moonshine_display()
-    dt = deltatime.getTime()
-end
-
 global function connect(signal_title: string, slot: Slot)
     if signals[signal_title] then
         signals[signal_title]:addSlot(slot)
@@ -82,8 +71,17 @@ global function emit(signal_title: string)
     end
 end
 
--- default signals:
+-- hook:
+local deltatime = require("externals/deltatime/deltatime")
+local dt = deltatime.getTime()
+local moonshine_display = window.display
+_G["window"].display = function()
+    process_signals()
+    moonshine_display()
+    dt = deltatime.getTime()
+end
 
+-- default signals:
 Signal:new("window_resized", function(data: Data): boolean
     if not data.new_size then data.new_size = window.get_size() end
 
