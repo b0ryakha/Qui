@@ -14,6 +14,8 @@ function Window:new(parent: IWidget, size_policy: SizePolicy, size?: Vector2): W
     self.ol_color = CachedColor:new(70, 70, 70)
     self.rounding = 0
 
+    connect("new_frame", function() self:renderTooltip() end)
+
     return self
 end
 
@@ -37,8 +39,6 @@ function Window:render()
     for _, child in ipairs(self.childs) do
         child:render()
     end
-
-    self:renderTooltip()
 end
 
 function Window:getBackgroundColor(): Color

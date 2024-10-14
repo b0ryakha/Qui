@@ -26,6 +26,8 @@ function Label:new(parent: IWidget, text?: string, color?: Color): Label
 
     self:setFont(CachedFont:new("Arial.ttf", 18))
     self.size = self.measure:copy()
+    
+    connect("new_frame", function() self:renderTooltip() end)
 
     return self
 end
@@ -45,7 +47,6 @@ function Label:render()
     end
 
     render.text(self.pos.x as integer, self.pos.y as integer, self.font, self.text, self.color)
-    self:renderTooltip()
 end
 
 function Label:setFont(font: Font)

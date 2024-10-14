@@ -116,3 +116,7 @@ Signal:new("cursor_stopped", function(data: Data): boolean
 
     return false
 end)
+
+Signal:new("new_frame", function(_: Data): boolean
+    return true
+end)

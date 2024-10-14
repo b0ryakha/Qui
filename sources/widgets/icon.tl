@@ -10,6 +10,8 @@ function Icon:new(parent: IWidget, path: string, size_policy: SizePolicy, size?:
 
     self.sprite = Sprite:new(path, self.size.x as integer, self.size.y as integer)
 
+    connect("new_frame", function() self:renderTooltip() end)
+
     return self
 end
 
@@ -22,9 +24,7 @@ end
 -- override:
 function Icon:render()
     if not self.is_visible then return end
-
     render.sprite(self.sprite)
-    self:renderTooltip()
 end
 
 function Icon:setColor(color: Color)
