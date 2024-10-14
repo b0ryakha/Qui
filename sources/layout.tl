@@ -1,5 +1,4 @@
 require("widget")
-require("cachedcolor")
 require("oop")
 require("margin")
 

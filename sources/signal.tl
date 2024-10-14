@@ -1,6 +1,8 @@
 require("oop")
 require("format")
 
+local deltatime = require("externals/deltatime/deltatime")
+
 global type Data = { string : any }
 global type Slot = function(Data)
 global type Trigger = function(data: Data): boolean
@@ -56,10 +58,12 @@ global function process_signals()
 end
 
 -- hook:
-local moonshine_is_open = window.is_open
-_G["window"].is_open = function(): boolean
+local dt = deltatime.getTime()
+local moonshine_display = window.display
+_G["window"].display = function()
     process_signals()
-    return moonshine_is_open()
+    moonshine_display()
+    dt = deltatime.getTime()
 end
 
 global function connect(signal_title: string, slot: Slot)
@@ -95,6 +99,21 @@ Signal:new("startup", function(data: Data): boolean
     if not data.started then
         data.started = true
         return true
+    end
+
+    return false
+end)
+
+Signal:new("cursor_stopped", function(data: Data): boolean
+    if not data.old_cursor_pos then data.old_cursor_pos = cursor.get_pos() end
+    if not data.duration then data.duration = 0 end
+
+    if data.old_cursor_pos == cursor.get_pos() then
+        data.duration = data.duration as number + dt
+        return true
+    else
+        data.duration = 0
+        data.old_cursor_pos = cursor.get_pos()
     end
 
     return false

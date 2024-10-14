@@ -5,6 +5,7 @@ require("window")
 
 global record Application is IWidget
     title: string
+    bg_color: Color
 end
 
 function Application:new(title: string, size?: Vector2): Application
@@ -18,6 +19,8 @@ function Application:new(title: string, size?: Vector2): Application
     end
 
     self.title = title
+    self.bg_color = CachedColor:new(255, 255, 255)
+
     window.set_title(self.title)
 
     connect("window_resized", function()
@@ -31,6 +34,8 @@ end
 
 -- override
 function Application:render()
+    render.rectangle(0, 0, self.size.x as integer, self.size.y as integer, self.bg_color)
+
     for _, child in ipairs(self.childs) do
         child:render()
     end

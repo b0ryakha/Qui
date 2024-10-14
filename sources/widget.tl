@@ -2,6 +2,8 @@ require("sizepolicy")
 require("signal")
 require("oop")
 require("format")
+require("cachedfont")
+require("cachedcolor")
 
 global interface IWidget
     parent: IWidget
@@ -13,10 +15,13 @@ global interface IWidget
     size: Vector2
     min_size: Vector2
     size_policy: SizePolicy
+    tooltip: string
 
     addChild: function<Self>(Self, IWidget)
     setParent: function<Self>(Self, IWidget)
     setLayout: function<Self>(Self, IWidget)
+    renderTooltip: function<Self>(Self, number)
+    setTooltip: function<Self>(Self, string)
     getSize: function<Self>(Self): Vector2
     getPos: function<Self>(Self): Vector2
     hide: function<Self>(Self)
@@ -49,12 +54,14 @@ function Widget:new(parent: IWidget, size_policy: SizePolicy, size: Vector2): Wi
     self.size = size and size:copy() or Vector2:new(100, 100)
     self.min_size = self.size:copy()
     self.size_policy = size_policy or "Fixed"
+    self.tooltip = ""
 
     self.childs = {}
     self:setParent(parent)
 
     connect("window_resized", function() self:update() end)
     connect("startup", function() self:update() end)
+    connect("cursor_stopped", function(data: Data) self:renderTooltip(data.duration as number) end)
     
     return self
 end
@@ -86,6 +93,39 @@ function Widget:setLayout(widget: IWidget)
     widget:setParent(self)
     widget:setSize(self.size) -- by ref
     widget:setPos(self.pos) -- by ref
+end
+
+function Widget:renderTooltip(duration: number)
+    if duration as number <= 1 then return end
+    -- if in bound
+
+    local tooltip: { string : any } = {}
+    tooltip.text = self.tooltip
+    tooltip.font = CachedFont:new("Arial.ttf", 20)
+    tooltip.measure = render.measure_text(tooltip.font as Font, tooltip.text as string)
+    tooltip.bg_color = CachedColor:new(220, 220, 220)
+    tooltip.color = CachedColor:new(0, 0, 0)
+    tooltip.pos = cursor.get_pos()
+
+    render.rectangle(
+        (tooltip.pos as Vector2).x as integer,
+        (tooltip.pos as Vector2).y as integer,
+        (tooltip.measure as Vector2).x as integer,
+        (tooltip.measure as Vector2).y as integer,
+        tooltip.bg_color as Color
+    )
+
+    render.text(
+        (tooltip.pos as Vector2).x as integer,
+        (tooltip.pos as Vector2).y as integer,
+        tooltip.font as Font,
+        tooltip.text as string,
+        tooltip.color as Color
+    )
+end
+
+function Widget:setTooltip(tooltip: string)
+    self.tooltip = tooltip
 end
 
 function Widget:getSize(): Vector2

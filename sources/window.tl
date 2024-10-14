@@ -1,4 +1,3 @@
-require("cachedcolor")
 require("widget")
 require("oop")
 
