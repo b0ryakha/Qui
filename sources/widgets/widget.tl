@@ -114,34 +114,41 @@ function Widget:renderTooltip(duration: number)
         self.is_tooltip_visible = false
     end
 
-    local tooltip: { string : any } = {}
-    tooltip.text = self.tooltip
-    tooltip.font = CachedFont:new("Arial.ttf", 20)
-    tooltip.measure = render.measure_text(tooltip.font as Font, tooltip.text as string)
-    tooltip.bg_color = CachedColor:new(220, 220, 220)
-    tooltip.color = CachedColor:new(0, 0, 0)
-    tooltip.pos = cursor.get_pos()
-    tooltip.offset = 15
+    local font = CachedFont:new("Arial.ttf", 13)
+    local measure = render.measure_text(font as Font, self.tooltip as string)
+    local pos = cursor.get_pos()
+    local cursor_size = 16
+    local offset = 4
 
     render.rectangle(
-        (tooltip.pos as Vector2).x as integer + tooltip.offset as integer,
-        (tooltip.pos as Vector2).y as integer + tooltip.offset as integer,
-        (tooltip.measure as Vector2).x as integer,
-        (tooltip.measure as Vector2).y as integer,
-        tooltip.bg_color as Color
+        pos.x as integer + cursor_size,
+        pos.y as integer + cursor_size,
+        measure.x as integer + offset * 2,
+        measure.y as integer + offset * 2,
+        CachedColor:new(255, 255, 255)
+    )
+
+    render.outline_rectangle(
+        pos.x as integer + cursor_size,
+        pos.y as integer + cursor_size,
+        measure.x as integer + offset * 2,
+        measure.y as integer + offset * 2,
+        2,
+        CachedColor:new(220, 220, 220),
+        1
     )
 
     render.text(
-        (tooltip.pos as Vector2).x as integer + tooltip.offset as integer,
-        (tooltip.pos as Vector2).y as integer + tooltip.offset as integer,
-        tooltip.font as Font,
-        tooltip.text as string,
-        tooltip.color as Color
+        pos.x as integer + cursor_size + offset,
+        pos.y as integer + cursor_size + offset,
+        font,
+        self.tooltip,
+        CachedColor:new(60, 60, 60)
     )
 end
 
-function Widget:setTooltip(tooltip: string)
-    self.tooltip = tooltip
+function Widget:setTooltip(tp: string)
+    self.tooltip = tp
 end
 
 function Widget:getSize(): Vector2
