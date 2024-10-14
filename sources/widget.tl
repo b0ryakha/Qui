@@ -97,7 +97,8 @@ end
 
 function Widget:renderTooltip(duration: number)
     if duration as number <= 1 then return end
-    -- if in bound
+    if self.tooltip == "" then return end
+    if not cursor.is_bound(self.pos.x as integer, self.pos.y as integer, self.size.x as integer, self.size.y as integer) then return end
 
     local tooltip: { string : any } = {}
     tooltip.text = self.tooltip
@@ -106,18 +107,19 @@ function Widget:renderTooltip(duration: number)
     tooltip.bg_color = CachedColor:new(220, 220, 220)
     tooltip.color = CachedColor:new(0, 0, 0)
     tooltip.pos = cursor.get_pos()
+    tooltip.offset = 15
 
     render.rectangle(
-        (tooltip.pos as Vector2).x as integer,
-        (tooltip.pos as Vector2).y as integer,
+        (tooltip.pos as Vector2).x as integer + tooltip.offset as integer,
+        (tooltip.pos as Vector2).y as integer + tooltip.offset as integer,
         (tooltip.measure as Vector2).x as integer,
         (tooltip.measure as Vector2).y as integer,
         tooltip.bg_color as Color
     )
 
     render.text(
-        (tooltip.pos as Vector2).x as integer,
-        (tooltip.pos as Vector2).y as integer,
+        (tooltip.pos as Vector2).x as integer + tooltip.offset as integer,
+        (tooltip.pos as Vector2).y as integer + tooltip.offset as integer,
         tooltip.font as Font,
         tooltip.text as string,
         tooltip.color as Color
