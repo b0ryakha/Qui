@@ -109,7 +109,7 @@ function Widget:renderTooltip()
     local is_bound = cursor.is_bound(self.pos.x as integer, self.pos.y as integer, self.size.x as integer, self.size.y as integer)
 
     if not self.is_tooltip_visible then
-        if self.tooltip_duration > 1 and is_bound then
+        if self.tooltip_duration > 0.5 and is_bound then
             self.is_tooltip_visible = true
         else
             return
