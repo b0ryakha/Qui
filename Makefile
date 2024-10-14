@@ -6,9 +6,12 @@ BUILD_DIR = "./build"
 build:
 	tl check ${SRC_DIR}/*.tl &&
 	tl gen ${SRC_DIR}/*.tl &&
+	tl check ${SRC_DIR}/widgets/*.tl &&
+	tl gen ${SRC_DIR}/widgets/*.tl &&
 	rm -rf ${BUILD_DIR} &&
 	mkdir ${BUILD_DIR} &&
-	mv ${SRC_DIR}/*.lua ${BUILD_DIR}
+	mv ${SRC_DIR}/*.lua ${BUILD_DIR} &&
+	mv ${SRC_DIR}/widgets/*.lua ${BUILD_DIR}
 
 build_examples: build
 	tl check ${EXM_DIR}/*.tl &&
