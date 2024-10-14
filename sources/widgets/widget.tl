@@ -40,8 +40,6 @@ global interface IWidget
     setPos: function<Self>(Self, Vector2)
     isWidthFlexible: function<Self>(Self): boolean
     isHeightFlexible: function<Self>(Self): boolean
-
-    -- pure virtual:
     render: function<Self>(Self)
     update: function<Self>(Self)
 end
@@ -79,7 +77,12 @@ function Widget:__tostring(): string
 end
 
 function Widget:render() end
-function Widget:update() end
+
+function Widget:update()
+    for _, child in ipairs(self.childs) do
+        child:update()
+    end
+end
 
 function Widget:addChild(widget: IWidget)
     if not widget then return end
