@@ -15,7 +15,9 @@ global interface IWidget
     size: Vector2
     min_size: Vector2
     size_policy: SizePolicy
+
     tooltip: string
+    is_tooltip_visible: boolean
 
     addChild: function<Self>(Self, IWidget)
     setParent: function<Self>(Self, IWidget)
@@ -54,7 +56,9 @@ function Widget:new(parent: IWidget, size_policy: SizePolicy, size: Vector2): Wi
     self.size = size and size:copy() or Vector2:new(100, 100)
     self.min_size = self.size:copy()
     self.size_policy = size_policy or "Fixed"
+
     self.tooltip = ""
+    self.is_tooltip_visible = false
 
     self.childs = {}
     self:setParent(parent)
@@ -96,9 +100,19 @@ function Widget:setLayout(widget: IWidget)
 end
 
 function Widget:renderTooltip(duration: number)
-    if duration as number <= 1 then return end
     if self.tooltip == "" then return end
-    if not cursor.is_bound(self.pos.x as integer, self.pos.y as integer, self.size.x as integer, self.size.y as integer) then return end
+
+    local is_bound = cursor.is_bound(self.pos.x as integer, self.pos.y as integer, self.size.x as integer, self.size.y as integer)
+
+    if not self.is_tooltip_visible then
+        if duration as number > 1 and is_bound then
+            self.is_tooltip_visible = true
+        else
+            return
+        end
+    elseif not is_bound then
+        self.is_tooltip_visible = false
+    end
 
     local tooltip: { string : any } = {}
     tooltip.text = self.tooltip
