@@ -8,7 +8,7 @@ local app = Application:new("Layouts")
 local layout = Layout:new(app, "VBox")
 
 local label = Label:new(layout, "Aligned text")
-label:setSize(Vector2:new(100, 200))
+label:setSize(Vector2:new(200, 200))
 label:turnDebug()
 label:setAlignment("Center", "Down")
 

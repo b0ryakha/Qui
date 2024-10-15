@@ -15,8 +15,8 @@ _G.type = function(object: any): string
     return original_type(object)
 end
 
-global function derived<T>(object: T): string
-    return (getmetatable(object) as IClass).__base_type
+global function instanceof<T, U>(self: T, object: U): boolean
+    return (getmetatable(self) as IClass).__base_type == (getmetatable(object) as IClass).__base_type
 end
 
 global function create<T>(class: T, name: string): T
