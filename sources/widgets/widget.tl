@@ -129,7 +129,7 @@ function Widget:renderTooltip()
         self.is_tooltip_visible = false
     end
 
-    local font = CachedFont:new("Arial.ttf", 13)
+    local font = CachedFont:new("SansSerif.ttf", 13)
     local measure = render.measure_text(font as Font, self.tooltip as string)
     local pos = cursor.get_pos()
     local cursor_size = 16
