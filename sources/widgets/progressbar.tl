@@ -2,11 +2,13 @@ require("widget")
 require("oop")
 require("label")
 require("policy")
+require("frame")
 
 global record ProgressBar is IWidget
     label: Label
     percent: integer
     accent_color: Color
+    frame: Frame
 
 -- force decl:
     setPercent: function<Self>(Self, integer)
@@ -19,6 +21,10 @@ function ProgressBar:new(parent: IWidget, policy?: Policy, size?: Vector2, perce
     self.label:setAlignment(Alignment:new("Center"))
     self.label:setPos(self.pos) -- by ref
     self.label:setSize(self.size) -- by ref
+
+    self.frame = Frame:new(nil)
+    self.frame:setPos(self.pos) -- by ref
+    self.frame:setSize(self.size) -- by ref
 
     self:setPercent(percent or 0)
     self.accent_color = CachedColor:new(50, 150, 215)
@@ -43,36 +49,17 @@ function ProgressBar:render()
         CachedColor:new(250, 250, 250),
         1
     )
-
-    render.outline_rectangle(
-        self.pos.x as integer,
-        self.pos.y as integer,
-        self.size.x as integer,
-        self.size.y as integer,
-        2,
-        CachedColor:new(150, 150, 150),
-        2
-    )
-
+    
     render.rectangle(
         self.pos.x as integer,
         self.pos.y as integer,
         cmath.round(self.size.x * (self.percent / 100)),
         self.size.y as integer,
         self.accent_color,
-        2
+        1
     )
 
-    render.outline_rectangle(
-        self.pos.x as integer,
-        self.pos.y as integer,
-        cmath.round(self.size.x * (self.percent / 100)),
-        self.size.y as integer,
-        2,
-        CachedColor:new(self.accent_color.r - 50, self.accent_color.g - 50, self.accent_color.b - 50),
-        2
-    )
-
+    self.frame:render()
     self.label:render()
 end
 
