@@ -6,6 +6,7 @@ require("spacer")
 require("widget")
 require("window")
 require("groupbox")
+require("progressbar")
 
 require("margin")
 require("signal")
@@ -15,7 +16,7 @@ require("cachedfont")
 
 -- hook:
 local deltatime = require("externals/deltatime/deltatime")
-local dt: number = 0
+global dt: number = 0
 local moonshine_display = window.display
 _G["window"].display = function()
     process_signals()
