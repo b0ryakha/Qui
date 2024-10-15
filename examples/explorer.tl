@@ -1,9 +1,5 @@
 package.path = package.path .. ";./build/?.lua"
-
-require("application")
-require("window")
-require("layout")
-require("icon")
+require("qui")
 
 local app = Application:new("Explorer")
 local main = Layout:new(app, "VBox")

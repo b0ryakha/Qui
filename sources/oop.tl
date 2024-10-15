@@ -16,7 +16,7 @@ _G.type = function(object: any): string
 end
 
 global function instanceof<T, U>(self: T, object: U): boolean
-    return (getmetatable(self) as IClass).__base_type == (getmetatable(object) as IClass).__base_type
+    return (getmetatable(self) as IClass).__base_type == type(object)
 end
 
 global function create<T>(class: T, name: string): T

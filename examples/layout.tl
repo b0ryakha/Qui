@@ -1,9 +1,5 @@
 package.path = package.path .. ";./build/?.lua"
-
-require("application")
-require("window")
-require("layout")
-require("spacer")
+require("qui")
 
 local app = Application:new("Layouts")
 
