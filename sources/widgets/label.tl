@@ -35,7 +35,7 @@ function Label:new(parent: IWidget, text?: string, color?: Color): Label
     self.is_debug = false
     self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 100)
 
-    self:setFont(CachedFont:new("Arial.ttf", 16))
+    self:setFont(CachedFont:new("SansSerif.ttf", 16))
     self.size = self.measure:copy()
     
     return self

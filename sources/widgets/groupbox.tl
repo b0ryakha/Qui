@@ -39,6 +39,15 @@ function GroupBox:render()
 
     self.label:render()
 
+    render.rectangle(
+        self.pos.x as integer,
+        self.pos.y as integer + self.label_offset,
+        self.size.x as integer,
+        self.size.y as integer,
+        CachedColor:new(250, 250, 250),
+        1
+    )
+
     render.outline_rectangle(
         self.pos.x as integer,
         self.pos.y as integer + self.label_offset,
