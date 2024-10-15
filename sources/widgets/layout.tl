@@ -18,7 +18,7 @@ end
 function Layout:new(parent: IWidget, align_type: LayoutType, size_policy?: SizePolicy, size?: Vector2): Layout
     local self = extends(Layout, "Layout", Widget, parent, size_policy or "Maximum", size)
 
-    if type(self.parent) ~= "Layout" then
+    if self.parent and type(self.parent) ~= "Layout" then
         self.parent:setLayout(self)
     end
 
@@ -224,7 +224,5 @@ function Layout:render()
         )
     end
 
-    for _, child in ipairs(self.childs) do
-        child:render()
-    end
+    self:childsRender()
 end

@@ -35,8 +35,5 @@ end
 -- override
 function Application:render()
     render.rectangle(0, 0, self.size.x as integer, self.size.y as integer, self.bg_color)
-
-    for _, child in ipairs(self.childs) do
-        child:render()
-    end
+    self:childsRender()
 end

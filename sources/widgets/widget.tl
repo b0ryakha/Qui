@@ -40,6 +40,8 @@ global interface IWidget
     setPos: function<Self>(Self, Vector2)
     isWidthFlexible: function<Self>(Self): boolean
     isHeightFlexible: function<Self>(Self): boolean
+    childsRender: function<Self>(Self)
+    childsUpdate: function<Self>(Self)
     render: function<Self>(Self)
     update: function<Self>(Self)
 end
@@ -63,6 +65,7 @@ function Widget:new(parent: IWidget, size_policy: SizePolicy, size: Vector2): Wi
     self.childs = {}
     self:setParent(parent)
 
+    connect("new_frame", function() self:renderTooltip() end)
     connect("window_resized", function() self:update() end)
     connect("startup", function() self:update() end)
     connect("cursor_stopped", function(data: Data)
@@ -76,21 +79,26 @@ function Widget:__tostring(): string
     return format("%(pos: %, size: %, policy: \"%\")", type(self), self.pos, self.size, self.size_policy)
 end
 
-function Widget:render() end
+function Widget:childsRender()
+    for _, child in ipairs(self.childs) do
+        child:render()
+    end
+end
 
-function Widget:update()
+function Widget:childsUpdate()
     for _, child in ipairs(self.childs) do
         child:update()
     end
 end
+
+function Widget:render() self:childsRender() end
+function Widget:update() self:childsUpdate() end
 
 function Widget:addChild(widget: IWidget)
     if not widget then return end
 
     widget.parent = self
     table.insert(self.childs, widget)
-
-    self:update()
 end
 
 function Widget:setParent(widget: IWidget)

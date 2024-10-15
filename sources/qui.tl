@@ -5,6 +5,7 @@ require("layout")
 require("spacer")
 require("widget")
 require("window")
+require("groupbox")
 
 require("margin")
 require("signal")

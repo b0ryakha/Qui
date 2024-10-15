@@ -35,11 +35,9 @@ function Label:new(parent: IWidget, text?: string, color?: Color): Label
     self.is_debug = false
     self.debug_color = CachedColor:new(cmath.rand_int(150, 255), cmath.rand_int(20, 100), cmath.rand_int(20, 100), 100)
 
-    self:setFont(CachedFont:new("Arial.ttf", 18))
+    self:setFont(CachedFont:new("Arial.ttf", 16))
     self.size = self.measure:copy()
     
-    connect("new_frame", function() self:renderTooltip() end)
-
     return self
 end
 
@@ -118,14 +116,6 @@ end
 
 function Label:turnDebug(is_debug?: boolean)
     self.is_debug = is_debug == nil and true or is_debug
-end
-
-function Label:setSize(size: Vector2)
-    self.size = size:copy()
-end
-
-function Label:getSize(): Vector2
-    return self.size
 end
 
 function Label:setAlignment(h: LabelHAlign, v: LabelVAlign)
