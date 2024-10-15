@@ -5,7 +5,7 @@ global record Icon is IWidget
     sprite: Sprite
 end
 
-function Icon:new(parent: IWidget, path: string, size_policy: SizePolicy, size?: Vector2): Icon
+function Icon:new(parent: IWidget, path: string, size_policy: Policy, size?: Vector2): Icon
     local self = extends(Icon, "Icon", Widget, parent, size_policy, size)
 
     self.sprite = Sprite:new(path, self.size.x as integer, self.size.y as integer)

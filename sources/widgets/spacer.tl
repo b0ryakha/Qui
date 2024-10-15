@@ -35,7 +35,7 @@ function Spacer:setSize(size: Vector2)
         error("Spacer: Cannot set a nil size")
     end
 
-    self.size_policy = "Fixed"
+    self.size_policy = Policy:new("Fixed")
     self.size = size
     self:update()
 end

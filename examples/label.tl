@@ -4,14 +4,14 @@ require("qui")
 local app = Application:new("Layouts")
 local layout = Layout:new(app, "VBox")
 
-local label = Label:new(layout, "Aligned text")
-label:setSize(Vector2:new(200, 200))
+local label = Label:new(layout, "Evelyn Smith")
+label:setSize(Vector2:new(150, 150))
 label:turnDebug()
-label:setAlignment("Center", "Down")
+label:setAlignment(Alignment:new("Center", "Bottom"))
 
-Label:new(layout, "Just text")
+Label:new(layout, "designer")
 
-local link = Label:new(layout, "https://www.youtube.com/")
+local link = Label:new(layout, "https://www.youtube.com")
 link:makeClickable()
 
 while window.is_open() do

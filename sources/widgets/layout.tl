@@ -15,8 +15,8 @@ global record Layout is IWidget
     debug_color: Color
 end
 
-function Layout:new(parent: IWidget, align_type: LayoutType, size_policy?: SizePolicy, size?: Vector2): Layout
-    local self = extends(Layout, "Layout", Widget, parent, size_policy or "Maximum", size)
+function Layout:new(parent: IWidget, align_type: LayoutType, size_policy?: Policy, size?: Vector2): Layout
+    local self = extends(Layout, "Layout", Widget, parent, size_policy or Policy:new("Maximum"), size)
 
     if self.parent and type(self.parent) ~= "Layout" then
         self.parent:setLayout(self)
@@ -42,22 +42,26 @@ end
 
 -- private:
 function Layout:warp(child: IWidget)
-    if child.size_policy == "Fixed" then return end
-
-    local right_edge = self.pos.x + self.size.x - self.margin.right
-    local bottom_edge = self.pos.y + self.size.y - self.margin.bottom
-
     -- contract:
-    if (child.pos.x + child.size.x) >= right_edge then
-        child.size.x = child.size.x - (child.pos.x + child.size.x - right_edge)
+    if child.size_policy.h ~= "Fixed" then
+        local right_edge = self.pos.x + self.size.x - self.margin.right
+
+        if (child.pos.x + child.size.x) >= right_edge then
+            child.size.x = child.size.x - (child.pos.x + child.size.x - right_edge)
+        end
     end
-    if (child.pos.y + child.size.y) >= bottom_edge then
-        child.size.y = child.size.y - (child.pos.y + child.size.y - bottom_edge)
+
+    if child.size_policy.v ~= "Fixed" then
+        local bottom_edge = self.pos.y + self.size.y - self.margin.bottom
+
+        if (child.pos.y + child.size.y) >= bottom_edge then
+            child.size.y = child.size.y - (child.pos.y + child.size.y - bottom_edge)
+        end
     end
 end
 
 -- private:
-function Layout:horizontalAlign()
+function Layout:hAlign()
     local total_width = self.size.x - self.margin.left - self.margin.right
     local total_height = self.size.y - self.margin.top - self.margin.bottom
     
@@ -80,7 +84,7 @@ function Layout:horizontalAlign()
         if warp_count > 0 and child:isWidthFlexible() then
             local new_width = flexible_width / warp_count
             
-            if child.size_policy == "Maximum" then
+            if child.size_policy.h == "Maximum" then
                 child.size.x = math.max(child.min_size.x, new_width)
                 max_children_count = max_children_count + 1
             else -- Minimum:
@@ -89,10 +93,14 @@ function Layout:horizontalAlign()
         end
         
         if child:isHeightFlexible() then
-            child.size.y = total_height
+            if child.size_policy.v == "Maximum" then
+                child.size.y = total_height
+            else -- Minimum:
+                child.size.y = math.min(child.min_size.y, total_height)
+            end
         end
 
-        if child.size_policy ~= "Maximum" then
+        if child.size_policy.h ~= "Maximum" then
             total_children_width = total_children_width + child.size.x
         end
     end
@@ -102,7 +110,7 @@ function Layout:horizontalAlign()
         local new_width = remaining_width / max_children_count
 
         for _, child in ipairs(self.childs) do
-            if child.size_policy == "Maximum" then
+            if child.size_policy.h == "Maximum" then
                 child.size.x = new_width
                 total_children_width = total_children_width + child.size.x
             end
@@ -120,7 +128,7 @@ function Layout:horizontalAlign()
 end
 
 -- private:
-function Layout:verticalAlign()
+function Layout:vAlign()
     local total_width = self.size.x - self.margin.left - self.margin.right
     local total_height = self.size.y - self.margin.top - self.margin.bottom
     
@@ -143,7 +151,7 @@ function Layout:verticalAlign()
         if warp_count > 0 and child:isHeightFlexible() then
             local new_height = flexible_height / warp_count
             
-            if child.size_policy == "Maximum" then
+            if child.size_policy.v == "Maximum" then
                 child.size.y = math.max(child.min_size.y, new_height)
                 max_children_count = max_children_count + 1
             else -- Minimum:
@@ -152,10 +160,14 @@ function Layout:verticalAlign()
         end
         
         if child:isWidthFlexible() then
-            child.size.x = total_width
+            if child.size_policy.h == "Maximum" then
+                child.size.x = total_width
+            else -- Minimum:
+                child.size.x = math.min(child.min_size.x, total_width)
+            end
         end
 
-        if child.size_policy ~= "Maximum" then
+        if child.size_policy.v ~= "Maximum" then
             total_children_height = total_children_height + child.size.y
         end
     end
@@ -165,7 +177,7 @@ function Layout:verticalAlign()
         local new_height = remaining_height / max_children_count
 
         for _, child in ipairs(self.childs) do
-            if child.size_policy == "Maximum" then
+            if child.size_policy.v == "Maximum" then
                 child.size.y = new_height
                 total_children_height = total_children_height + child.size.y
             end
@@ -200,8 +212,8 @@ end
 
 -- override:
 function Layout:update()
-    if self.type == "HBox" then self:horizontalAlign() end
-    if self.type == "VBox" then self:verticalAlign() end
+    if self.type == "HBox" then self:hAlign() end
+    if self.type == "VBox" then self:vAlign() end
     if self.type == "Grid" then error("not impl") end
 
     for _, child in ipairs(self.childs) do

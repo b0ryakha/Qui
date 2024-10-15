@@ -9,7 +9,7 @@ require("groupbox")
 
 require("margin")
 require("signal")
-require("sizepolicy")
+require("policy")
 require("cachedcolor")
 require("cachedfont")
 

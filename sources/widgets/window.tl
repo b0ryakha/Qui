@@ -7,7 +7,7 @@ global record Window is IWidget
     rounding: integer
 end
 
-function Window:new(parent: IWidget, size_policy: SizePolicy, size?: Vector2): Window
+function Window:new(parent: IWidget, size_policy: Policy, size?: Vector2): Window
     local self = extends(Window, "Window", Widget, parent, size_policy, size)
 
     self.bg_color = CachedColor:new(35, 35, 35)

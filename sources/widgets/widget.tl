@@ -1,4 +1,4 @@
-require("sizepolicy")
+require("policy")
 require("signal")
 require("oop")
 require("format")
@@ -14,7 +14,7 @@ global interface IWidget
 
     size: Vector2
     min_size: Vector2
-    size_policy: SizePolicy
+    size_policy: Policy
 
     tooltip: string
     tooltip_duration: number
@@ -48,7 +48,7 @@ end
 
 global record Widget is IWidget end
 
-function Widget:new(parent: IWidget, size_policy: SizePolicy, size: Vector2): Widget
+function Widget:new(parent: IWidget, size_policy: Policy, size: Vector2): Widget
     local self = create(Widget, "Widget")
 
     self.pos = Vector2:new(0, 0)
@@ -56,7 +56,7 @@ function Widget:new(parent: IWidget, size_policy: SizePolicy, size: Vector2): Wi
 
     self.size = size and size:copy() or Vector2:new(100, 100)
     self.min_size = self.size:copy()
-    self.size_policy = size_policy or "Fixed"
+    self.size_policy = size_policy or Policy:new("Fixed")
 
     self.tooltip = ""
     self.tooltip_duration = 0
@@ -206,11 +206,11 @@ function Widget:isVisible(): boolean
 end
 
 function Widget:isWidthFlexible(): boolean
-    return self.size_policy ~= "Fixed"
+    return self.size_policy.h ~= "Fixed"
 end
 
 function Widget:isHeightFlexible(): boolean
-    return self.size_policy ~= "Fixed"
+    return self.size_policy.v ~= "Fixed"
 end
 
 function Widget:itemsCount(): integer

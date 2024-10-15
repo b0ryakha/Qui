@@ -9,7 +9,7 @@ global record GroupBox is IWidget
     layout: Layout
 end
 
-function GroupBox:new(parent: IWidget, size_policy: SizePolicy, title?: string, size?: Vector2): GroupBox
+function GroupBox:new(parent: IWidget, size_policy: Policy, title?: string, size?: Vector2): GroupBox
     local self = extends(GroupBox, "GroupBox", Widget, parent, size_policy, size)
 
     self.label = Label:new(nil, title or "")
@@ -20,6 +20,7 @@ function GroupBox:new(parent: IWidget, size_policy: SizePolicy, title?: string, 
     self.layout:setPos(self.pos) -- by ref
     self.layout:setSize(self.size) -- by ref
     self.layout.margin.top = self.layout.margin.top + self.label_offset
+    self.layout.margin.bottom = self.layout.margin.bottom - self.label_offset
 
     return self
 end
@@ -36,8 +37,6 @@ end
 -- override:
 function GroupBox:render()
     if not self.is_visible then return end
-
-    self.label:render()
 
     render.rectangle(
         self.pos.x as integer,
@@ -58,5 +57,6 @@ function GroupBox:render()
         1
     )
 
-    self.layout:childsRender()
+    self.label:render()
+    self.layout:render()
 end

@@ -1,14 +1,11 @@
 require("widget")
 require("oop")
 require("format")
-
-global enum LabelHAlign "Left" "Right" "Center" end
-global enum LabelVAlign "Top" "Down" "Center" end
+require("alignment")
 
 global record Label is IWidget
     text: string
-    h_align: LabelHAlign
-    v_align: LabelVAlign
+    align: Alignment
     color: Color
     is_link: boolean
 
@@ -27,8 +24,7 @@ function Label:new(parent: IWidget, text?: string, color?: Color): Label
     local self = extends(Label, "Label", Widget, parent)
 
     self.text = text or ""
-    self.h_align = "Left"
-    self.v_align = "Top"
+    self.align = Alignment:new("Left", "Top")
     self.color = color or CachedColor:new(0, 0, 0)
     self.is_link = false
 
@@ -81,15 +77,15 @@ function Label:render()
     local x = self.pos.x
     local y = self.pos.y
 
-    if self.h_align == "Right" then
+    if self.align.h == "Right" then
         x = self.pos.x + self.size.x - self.measure.x
-    elseif self.h_align == "Center" then
+    elseif self.align.h == "Center" then
         x = self.pos.x + self.size.x / 2 - self.measure.x / 2
     end
 
-    if self.v_align == "Down" then
+    if self.align.v == "Bottom" then
         y = self.pos.y + self.size.y - self.measure.y
-    elseif self.v_align == "Center" then
+    elseif self.align.v == "Center" then
         y = self.pos.y + self.size.y / 2 - self.measure.y / 2
     end
 
@@ -118,9 +114,8 @@ function Label:turnDebug(is_debug?: boolean)
     self.is_debug = is_debug == nil and true or is_debug
 end
 
-function Label:setAlignment(h: LabelHAlign, v: LabelVAlign)
-    self.h_align = h
-    self.v_align = v
+function Label:setAlignment(align: Alignment)
+    self.align = align
 end
 
 function Label:makeClickable()
