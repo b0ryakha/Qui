@@ -1,5 +1,5 @@
 package.path = package.path .. ";./build/?.lua"
-require("qui")
+require("aura")
 
 local app = Application:new("Groupbox")
 local layout = Layout:new(app, "VBox")
